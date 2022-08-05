@@ -12,6 +12,7 @@ This android app demonstrates how to send login, payment, refund, and transactio
 
 ##### This demo app is built and run using:
 * Android Studio
+* (best viewed on) Nexus 7 simulator on landscape mode
  
 ### Building the FusionCloud demo app
 ***
