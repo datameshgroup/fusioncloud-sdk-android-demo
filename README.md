@@ -12,6 +12,7 @@ This android app demonstrates how to send login, payment, refund, and transactio
 
 ##### This demo app is built and run using:
 * Android Studio
+* (best viewed on) Nexus 7 simulator on landscape mode
  
 ### Building the FusionCloud demo app
 ***
@@ -38,6 +39,13 @@ public static String providerIdentification = "<<Provided by DataMesh>>";
 public static String applicationName = "<<Provided by DataMesh>>";
 public static String softwareVersion = "<<Your POS version>>";
 ```
+Setting the TIMEOUT
+_For testing purposes, the current config for payment timeout is 10 seconds. After this, it will proceed to transaction status request which is 60 seconds. To change the timeout, update the ff values inside the `ActivityLoading.java`_
+```
+long cdtErrorHandlerLimit = 60000;
+long cdtPaymentLimit = 10000;
+```
+
 ### Dependencies
 
 ***
