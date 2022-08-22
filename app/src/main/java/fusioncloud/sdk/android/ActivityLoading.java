@@ -92,7 +92,7 @@ public class ActivityLoading extends AppCompatActivity {
     private Button btnCancelTxn;
     private TextView tvTimer;
     long cdtErrorHandlerLimit = 60000;
-    long cdtPaymentLimit = 10000;
+    long cdtPaymentLimit = 30000;
 
 
     public boolean connected;
@@ -115,6 +115,7 @@ public class ActivityLoading extends AppCompatActivity {
     public String displayMsg;
     public String displayHd;
     String txnType;
+    String maintxnType;
     SaleToPOIResponse response = null;
     SaleToPOIRequest request = null;
 
@@ -393,6 +394,7 @@ public class ActivityLoading extends AppCompatActivity {
                                     }
 
                                 case "payment":
+                                case "refund":
                                     if (serviceIDMatchesRequest && response.getPaymentResponse()!=null) {
                                         boolean saleTransactionIDMatchesRequest = response.getPaymentResponse().getSaleData().getSaleTransactionID()
                                                 .getTransactionID().equals(request.getPaymentRequest().getSaleData()
@@ -402,7 +404,7 @@ public class ActivityLoading extends AppCompatActivity {
                                             System.out.println("Unknown sale ID " + response.getPaymentResponse().getSaleData()
                                                     .getSaleTransactionID().getTransactionID());
                                             retry=false;
-                                            handleResponse(null, txnType);//van
+                                            handleResponse(null, txnType);
                                         }
 
                                         Response responseBody = response.getPaymentResponse().getResponse();
@@ -508,7 +510,7 @@ public class ActivityLoading extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        this.txnType = bundle.getString("txnType");
+        this.maintxnType = bundle.getString("txnType");
         String Total = bundle.getString("Total");
         String Tip = bundle.getString("Tip");
         String Discount = bundle.getString("Discount");
@@ -548,13 +550,10 @@ public class ActivityLoading extends AppCompatActivity {
         });
 
         try {
-//            System.out.println(connect.get(cDTime,TimeUnit.MILLISECONDS));
             System.out.println(connect.get());
             if(connected){
-//                    System.out.println(login.get(cDTime,TimeUnit.MILLISECONDS));
                 System.out.println(login.get());
                 if (loginsuccess) {
-//                            System.out.println(pay.get(cDTime,TimeUnit.MILLISECONDS));
                     System.out.println(pay.get());
                 }
             }
@@ -702,7 +701,7 @@ public class ActivityLoading extends AppCompatActivity {
     private boolean doPayment(){
         request = null;
         try {
-            txnType = "payment";
+            txnType = maintxnType;
             request = buildPaymentRequest(txnType, serviceID, bTotal, bTip, bDiscount);
             System.out.println("Sending message to websocket server: " + "\n" + request);
 
@@ -720,8 +719,6 @@ public class ActivityLoading extends AppCompatActivity {
             txnType="payment";
             retry=true;
             doConnect();
-//        } catch (InterruptedException e) {
-//            System.out.println(e + "-----------InterruptedException --- paymentrequest");
         }
         return paymentsuccess;
     }

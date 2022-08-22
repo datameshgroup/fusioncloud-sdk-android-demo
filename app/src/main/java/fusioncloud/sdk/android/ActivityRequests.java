@@ -65,18 +65,15 @@ public class ActivityRequests extends AppCompatActivity {
 
             case "refund":
                 tvRequestTitle.setText("REFUND REQUEST");
-                btnSendReq.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String total = tvAmount.getText().toString();
-                        Intent intent = new Intent(ActivityRequests.this, ActivityLoading.class);
-                        intent.putExtra("txnType", "refund");
-                        intent.putExtra("Total", total);
-                        intent.putExtra("Tip", "0");
-                        intent.putExtra("Discount", "0");
-                        startActivity(intent);
-                        finish();
-                    }
+                btnSendReq.setOnClickListener(v -> {
+                    String total = tvAmount.getText().toString();
+                    Intent intent = new Intent(ActivityRequests.this, ActivityLoading.class);
+                    intent.putExtra("txnType", "refund");
+                    intent.putExtra("Total", total);
+                    intent.putExtra("Tip", "0");
+                    intent.putExtra("Discount", "0");
+                    startActivity(intent);
+                    finish();
                 });
                 break;
             case "reversal":
