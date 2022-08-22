@@ -31,8 +31,7 @@ android {
 dependencies {
     implementation files('libs/jndi-1.2.1.jar')
     implementation 'androidx.preference:preference:1.1.1'
-    implementation files('libs/fusion-cloud.jar')
-    //implementation files('libs/fusion-cloud.jar')
+    implementation 'com.datameshgroup.fusion:fusion-cloud:1.0.3'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation 'com.datameshgroup.fusion:fusion-sdk:1.2.2'
     implementation group: 'javax.json', name: 'javax.json-api', version: '1.0'
