@@ -30,7 +30,7 @@
 
                 <EditText
                     android:id="@+id/input_requested_amount"
-                    android:hint="0.00"
+                    android:text="99.99"
                     android:inputType="numberDecimal"
                     tools:ignore="TouchTargetSizeCheck" />
 
@@ -48,7 +48,7 @@
 
                 <EditText
                     android:id="@+id/input_tip_amount"
-                    android:hint="0.00"
+                    android:text="1.50"
                     android:inputType="numberDecimal"
                     tools:ignore="TouchTargetSizeCheck" />
 
@@ -113,10 +113,10 @@
                     android:id="@+id/edit_text_json_logs"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:gravity="top|left"
                     android:inputType="none|textMultiLine"
                     android:scrollbars="vertical"
                     android:text=""
+                    android:layout_gravity="bottom"
                     android:textColor="@color/white"
                     tools:ignore="SpeakableTextPresentCheck" />
             </TableRow>

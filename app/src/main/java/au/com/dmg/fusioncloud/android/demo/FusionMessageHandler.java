@@ -78,7 +78,6 @@ public class FusionMessageHandler {
                     String additionalResponse = response.getPaymentResponse().getResponse().getAdditionalResponse();
                     fusionMessageResponse.setMessage(false, MessageType.Response, MessageCategory.Payment, response, additionalResponse);
                 }
-
                 break;
             case TransactionStatus:
                 responseResult = response.getTransactionStatusResponse().getResponse().getResult();

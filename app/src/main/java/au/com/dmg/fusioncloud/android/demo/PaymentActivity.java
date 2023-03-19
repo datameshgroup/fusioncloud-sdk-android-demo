@@ -1,6 +1,5 @@
 package au.com.dmg.fusioncloud.android.demo;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -11,8 +10,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.math.BigDecimal;
@@ -57,7 +54,6 @@ import au.com.dmg.fusion.request.transactionstatusrequest.MessageReference;
 import au.com.dmg.fusion.request.transactionstatusrequest.TransactionStatusRequest;
 import au.com.dmg.fusion.response.EventNotification;
 import au.com.dmg.fusion.response.Response;
-import au.com.dmg.fusion.response.ResponseResult;
 import au.com.dmg.fusion.response.SaleToPOIResponse;
 import au.com.dmg.fusion.response.TransactionStatusResponse;
 import au.com.dmg.fusion.response.paymentresponse.PaymentResponse;
@@ -73,7 +69,7 @@ public class PaymentActivity extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");//
     private long pressedTime;
 
-    String mockHostProductCode = ""; //Update this for Mock Host Testing
+    String mockHostProductCode = "DMGTC44857"; //Update this for Mock Host Testing
     String providerIdentification = "Company A"; // test environment only - replace for production
     String applicationName = "POS Retail"; // test environment only - replace for production
     String softwareVersion = "01.00.00"; // test environment only - replace for production
@@ -95,9 +91,9 @@ public class PaymentActivity extends AppCompatActivity {
     String currentServiceID;
     String referenceServiceID;
 
-    TextView inputRequestedAmount;
-    TextView inputTipAmount;
-    TextView inputProductCode;
+    EditText inputRequestedAmount;
+    EditText inputTipAmount;
+    EditText inputProductCode;
 
     TextView jsonLogs;
 
@@ -230,6 +226,7 @@ public class PaymentActivity extends AppCompatActivity {
                         displayPaymentResponseMessage(fmr);
                         break;
                     case TransactionStatus:
+                        System.out.println("trans here handle");
                         handleTransactionResponseMessage(fmr);
                         break;
                 }
@@ -273,43 +270,64 @@ public class PaymentActivity extends AppCompatActivity {
         waitingForResponse=false;
     }
 
+    //TODO: FIX TRANSACTION STATUS RESPONSE. STOPS HERE.
     private void handleTransactionResponseMessage(FusionMessageResponse fmr) {
-        TransactionStatusResponse transactionStatusResponse = ((SaleToPOIResponse)fmr.saleToPOI).getTransactionStatusResponse();
-        Response responseBody = transactionStatusResponse.getResponse();
-
-                log(String.format("Transaction Status Result: %s ", responseBody.getResult()));
+        // TODO: handle transaction status response for others. currently designed for Payment only.
+        System.out.println("trans HERE");
+        TransactionStatusResponse transactionStatusResponse = null;
+        Response responseBody = null;
 
                 if (fmr.isSuccessful) {
+                    System.out.println("trans HERE success");
+
+                    transactionStatusResponse = ((SaleToPOIResponse)fmr.saleToPOI).getTransactionStatusResponse();
+                    responseBody = transactionStatusResponse.getResponse();
+                    log(String.format("Transaction Status Result: %s ", responseBody.getResult()));
+
                     Response paymentResponseBody = transactionStatusResponse
                             .getRepeatedMessageResponse().getRepeatedResponseMessageBody()
                             .getPaymentResponse().getResponse();
                     log(String.format("Actual Payment Result: %s",
                             paymentResponseBody.getResult()));
-                    log(
-                            String.format("Error Condition: %s, Additional Response: %s",
+                    log(String.format("Error Condition: %s, Additional Response: %s",
                                     paymentResponseBody.getErrorCondition(),
                                     paymentResponseBody.getAdditionalResponse()));
+                    FusionMessageResponse paymentFmr = new FusionMessageResponse();
+                    paymentFmr.setMessage(true, MessageType.Response, MessageCategory.Payment,(SaleToPOI) paymentResponseBody, "PAYMENT SUCCESSFUL");
+                    displayPaymentResponseMessage(paymentFmr);
 
+                    waitingForResponse = false;
 
                 } else if (fmr.errorCondition == ErrorCondition.InProgress) {
+                    System.out.println("trans HERE inprogress");
                     log("Transaction in progress...");
-                    log(String.format("Error Condition: %s, Additional Response: %s",
-                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
+//                    log(String.format("Error Condition: %s, Additional Response: %s",
+//                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
 
                     errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout
                     log("Sending another transaction status request after 10 seconds...");
                     log("Remaining seconds until error handling timeout: " + secondsRemaining);
-                    String serviceID = transactionStatusResponse.getMessageReference().getServiceID();
+//                    String serviceID = transactionStatusResponse.getMessageReference().getServiceID();
                     try {
                         TimeUnit.SECONDS.sleep(10);
-                        checkTransactionStatus(serviceID, "");
+                        checkTransactionStatus(currentServiceID, "");
                     } catch (InterruptedException e) {
                         log(e);
                     }
 
                 } else {
+                    System.out.println("trans HERE else");
+                    transactionStatusResponse = ((SaleToPOIResponse)fmr.saleToPOI).getTransactionStatusResponse();
+                    responseBody = transactionStatusResponse.getResponse();
                     log(String.format("Error Condition: %s, Additional Response: %s",
                             responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
+                    Response paymentResponseBody = transactionStatusResponse
+                            .getRepeatedMessageResponse().getRepeatedResponseMessageBody()
+                            .getPaymentResponse().getResponse();
+
+                    FusionMessageResponse paymentFmr = new FusionMessageResponse();
+                    paymentFmr.setMessage(false, MessageType.Response, MessageCategory.Payment,(SaleToPOI) paymentResponseBody, responseBody.getAdditionalResponse().toUpperCase());
+                    displayPaymentResponseMessage(paymentFmr);
                 }
 
 
@@ -385,11 +403,10 @@ public class PaymentActivity extends AppCompatActivity {
     private void doAbort(String serviceID, String abortReason){
 //        waitingForResponse=false;
 
-        hideCancelBtn(true);
-        hideProgressCircle(false);
+        endTransactionUi();
 
         handler.post(()-> {
-           respUiHeader.setText("CANCELLING TRANSACTION...");
+           respUiHeader.setText("ABORTING TRANSACTION");
         });
         SaleToPOIRequest abortTransactionPOIRequest = buildAbortRequest(serviceID, abortReason);
 
@@ -403,6 +420,9 @@ public class PaymentActivity extends AppCompatActivity {
             if (abortReason != "") {
                 doAbort(serviceID, abortReason);
             }
+            handler.post(()-> {
+                respUiHeader.setText("CHECKING TRANSACTION STATUS");
+            });
             SaleToPOIRequest transactionStatusRequest = buildTransactionStatusRequest(serviceID);
 
             log("Sending transaction status request to check status of payment...");
@@ -414,11 +434,16 @@ public class PaymentActivity extends AppCompatActivity {
             prevSecond = System.currentTimeMillis();
             secondsRemaining = (int) (errorHandlingTimeout/1000);
 
+            startTransactionUi();
             waitingForResponse = true;
             while(waitingForResponse) {
                 if(secondsRemaining < 1) {
-                    log("Transaction Status Request Timeout...");
-                    log("Display on POS = Please check Satellite Transaction History", true);
+                    log("Transaction Status Request Timeout...", true);
+                    endTransactionUi();
+                    handler.post(()->{
+                        respUiHeader.setText("Time Out");
+                        respUiDetail.setText("Please check Satellite Transaction History");
+                    });
                     break;
                 }
                 Listen();
@@ -477,8 +502,11 @@ public class PaymentActivity extends AppCompatActivity {
         return saleToPOI;
     }
 
-
     private  SaleToPOIRequest buildPaymentRequest(String serviceID) throws ConfigurationException {
+        String inputAmount = String.valueOf(inputRequestedAmount.getText());
+        String inputTip = String.valueOf(inputTipAmount.getText());
+        String productCode = String.valueOf(inputProductCode.getText());
+
         // Payment Request
          SaleTransactionID saleTransactionID = new SaleTransactionID.Builder()//
                 .transactionID("transactionID" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()))////
@@ -492,16 +520,16 @@ public class PaymentActivity extends AppCompatActivity {
 
         AmountsReq amountsReq = new AmountsReq.Builder()//
                 .currency("AUD")//
-                .requestedAmount(new BigDecimal(99.00))//
+                .requestedAmount(new BigDecimal(inputAmount))//
                 .build();
 
         SaleItem saleItem = new SaleItem.Builder()//
                 .itemID(0)//
-                .productCode(mockHostProductCode)//
+                .productCode(productCode)//
                 .unitOfMeasure(UnitOfMeasure.Other)//
                 .quantity(new BigDecimal(1))//
                 .unitPrice(new BigDecimal(100.00))//
-                .itemAmount(new BigDecimal(100.00))//
+                .itemAmount(new BigDecimal(inputAmount))//
                 .productLabel("Product Label")//
                 .build();
 
@@ -615,10 +643,11 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void startTransactionUi(){
         handler.post(()->{
-            btnCancel.setOnClickListener(v->doAbort(currentServiceID, "User Cancelled"));
-            btnCancel.setVisibility(View.VISIBLE);
+            if(currentTransaction==MessageCategory.Payment){
+                btnCancel.setOnClickListener(v->doAbort(currentServiceID, "User Cancelled"));
+                btnCancel.setVisibility(View.VISIBLE);
+            }
             progressCircle.setVisibility(View.VISIBLE);
-
             respUiHeader.setText(currentTransaction.toString().toUpperCase() + " IN PROGRESS");
             respUiDetail.setText("...");
         });
