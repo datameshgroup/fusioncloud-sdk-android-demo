@@ -46,5 +46,19 @@
     tapioca balls that you suck up through a big fat straw! .</string>
     <string name="match">Smooth and creamy matcha sweetened just right and served with steamed milk. This
     favorite will transport your senses to pure green delight. </string>
+    <string name="requestedamount">RequestedAmount</string>
+    <string name="tipamount">TipAmount</string>
+    <string name="product_code">Product Code</string>
+    <string name="ui_header">Transaction UI Display</string>
+    <string name="authourized_amount">Authourized Amount</string>
+    <string name="tip_amount">Tip Amount</string>
+    <string name="surcharge_amount">Surcharge Amount</string>
+    <string name="card_account">Card Account</string>
+    <string name="payment_brand">Payment Brand</string>
+    <string name="entry_mode">Entry Mode</string>
+    <string name="payment_type">Payment Type</string>
+    <string name="transaction_id">Transaction ID</string>
+    <string name="masked_pan">Masked PAN</string>
+    <string name="service_id">Service ID</string>
 
 </resources>

@@ -4,30 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fusioncloud.sdk.android.MainActivity"
+    tools:context="au.com.dmg.fusioncloud.android.demo.MainActivity"
     android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnProducts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:text="Products"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnCart"
+        android:id="@+id/btnPayment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="Payment"
-        app:layout_constraintEnd_toEndOf="@+id/btnProducts"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/btnProducts"
-        app:layout_constraintTop_toBottomOf="@+id/btnProducts" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnSatellite"
@@ -35,8 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:text="Sattelite"
-        app:layout_constraintEnd_toEndOf="@+id/btnCart"
-        app:layout_constraintStart_toStartOf="@+id/btnCart"
-        app:layout_constraintTop_toBottomOf="@+id/btnCart" />
+        app:layout_constraintEnd_toEndOf="@+id/btnPayment"
+        app:layout_constraintStart_toStartOf="@+id/btnPayment"
+        app:layout_constraintTop_toBottomOf="@+id/btnPayment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
