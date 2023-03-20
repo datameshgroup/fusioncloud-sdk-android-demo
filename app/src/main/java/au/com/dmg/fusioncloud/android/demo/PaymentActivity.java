@@ -114,6 +114,10 @@ public class PaymentActivity extends AppCompatActivity {
     EditText respServiceID;
 
 
+    Button btnLogin;
+    Button btnPurchase;
+    Button btnRefund;
+
     FusionClient fusionClient;
     Button btnCancel;
     ProgressBar progressCircle;
@@ -164,19 +168,19 @@ public class PaymentActivity extends AppCompatActivity {
         this.fusionClient.setSettings(saleID, poiID, kek); // replace with the Sale ID provided by DataMesh
 
 
-        Button btnLogin = findViewById(R.id.btnLogin);
+        btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
             executorService = Executors.newSingleThreadExecutor();
             executorService.submit(()-> doLogin());
         });
 
-        Button btnPurchase = findViewById(R.id.btnPurchase);
+        btnPurchase = findViewById(R.id.btnPurchase);
         btnPurchase.setOnClickListener(v -> {
             executorService = Executors.newSingleThreadExecutor();
             executorService.submit(()-> doPayment());
         });
 
-        Button btnRefund = findViewById(R.id.btnRefund);
+        btnRefund = findViewById(R.id.btnRefund);
 //        btnRefund.setOnClickListener(v -> doRefund());
 
         btnCancel = findViewById(R.id.btnCancel);
@@ -198,6 +202,8 @@ public class PaymentActivity extends AppCompatActivity {
             saleToPOI = fusionClient.readMessage();
 
             if(saleToPOI==null) return;
+
+            log("Response Received: \n" + saleToPOI.toJson());
 
             FusionMessageHandler fmh = new FusionMessageHandler();
             FusionMessageResponse fmr = null;
@@ -222,14 +228,22 @@ public class PaymentActivity extends AppCompatActivity {
             if (saleToPOI instanceof SaleToPOIResponse) {
                 System.out.println("LISTEN SaleToPOIResponse");
                 fmr = fmh.handle((SaleToPOIResponse) saleToPOI);
+
+                //Ignore response if it's not the current transaction
+                if(fmr.messageCategory!=currentTransaction && fmr.messageCategory!= MessageCategory.Event) {
+                    log("Ignoring Response above... waiting for " + currentTransaction +", received "+ fmr.messageCategory);
+                    return;
+                }
+
                 switch (fmr.messageCategory){
                     case Event: // This only logs an Event
                         SaleToPOIResponse spr = (SaleToPOIResponse) fmr.saleToPOI;
                         EventNotification eventNotification = spr.getEventNotification();
+                        log("Ignoring Event below...");
+                        log(spr.toJson());
                         log("Event Details: " + eventNotification.getEventDetails());
                         break;
                     case Login:
-                        //if fmr is successful
                         displayLoginResponseMessage(fmr);
                         break;
                     case Payment:
@@ -279,6 +293,29 @@ public class PaymentActivity extends AppCompatActivity {
         waitingForResponse=false;
     }
 
+    //Currently only called from transactionstatus response
+    private void displayPaymentResponseMessage(PaymentResponse pr, MessageHeader mh) {
+        //add receipt logic
+        endTransactionUi();
+        handler.post(() ->{
+            respUiHeader.setText("PAYMENT " + pr.getResponse().getResult().toString().toUpperCase());
+
+//            respReceipt.setText(msg.rece);
+            PaymentResult paymentResult = pr.getPaymentResult();
+
+            respAuthourizedAmount.setText(paymentResult.getAmountsResp().getAuthorizedAmount().toString());
+            respTipAmount.setText(paymentResult.getAmountsResp().getTipAmount().toString());
+            respSurchargeAmount.setText(paymentResult.getAmountsResp().getSurchargeAmount().toString());
+            respMaskedPAN.setText(paymentResult.getPaymentInstrumentData().getCardData().getMaskedPAN());
+            respPaymentBrand.setText(paymentResult.getPaymentInstrumentData().getCardData().getPaymentBrand().toString());
+            respEntryMode.setText(paymentResult.getPaymentInstrumentData().getCardData().getEntryMode().toString());
+            respPaymentType.setText(paymentResult.getPaymentType().toString());
+            respTransactionID.setText(pr.getPoiData().getPOITransactionID().getTransactionID());
+            respServiceID.setText(mh.getServiceID());
+        });
+        waitingForResponse=false;
+    }
+
     // Only called when there is no repeated message response on the transaction status
     private void displayTransactionResponseMessage(ErrorCondition errorCondition, String additionalResponse){
         endTransactionUi();
@@ -287,7 +324,7 @@ public class PaymentActivity extends AppCompatActivity {
         });
     }
 
-    //TODO: FIX TRANSACTION STATUS RESPONSE. STOPS HERE.
+
     private void handleTransactionResponseMessage(FusionMessageResponse fmr) {
         // TODO: handle transaction status response for others. currently designed for Payment only.
         TransactionStatusResponse transactionStatusResponse = null;
@@ -298,30 +335,21 @@ public class PaymentActivity extends AppCompatActivity {
                     responseBody = transactionStatusResponse.getResponse();
                     log(String.format("Transaction Status Result: %s ", responseBody.getResult()));
 
-                    Response paymentResponseBody = transactionStatusResponse
-                            .getRepeatedMessageResponse().getRepeatedResponseMessageBody()
-                            .getPaymentResponse().getResponse();
-                    log(String.format("Actual Payment Result: %s",
-                            paymentResponseBody.getResult()));
-                    log(String.format("Error Condition: %s, Additional Response: %s",
-                                    paymentResponseBody.getErrorCondition(),
-                                    paymentResponseBody.getAdditionalResponse()));
-                    FusionMessageResponse paymentFmr = new FusionMessageResponse();
-                    paymentFmr.setMessage(true, MessageType.Response, MessageCategory.Payment,(SaleToPOI) paymentResponseBody, "PAYMENT SUCCESSFUL");
-                    displayPaymentResponseMessage(paymentFmr);
-
-                    waitingForResponse = false;
+//                    Response paymentResponseBody = transactionStatusResponse
+//                            .getRepeatedMessageResponse().getRepeatedResponseMessageBody()
+//                            .getPaymentResponse().getResponse();
+//                    log(String.format("Actual Payment Result: %s",
+//                            paymentResponseBody.getResult()), true);
+                    PaymentResponse paymentResponse = transactionStatusResponse.getRepeatedMessageResponse().getRepeatedResponseMessageBody().getPaymentResponse();
+                    MessageHeader paymentMessageHeader = transactionStatusResponse.getRepeatedMessageResponse().getMessageHeader();
+                    displayPaymentResponseMessage(paymentResponse, paymentMessageHeader);
 
                 } else if (fmr.errorCondition == ErrorCondition.InProgress) {
                     log("Transaction in progress...");
-//                    log(String.format("Error Condition: %s, Additional Response: %s",
-//                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
-
                     if(secondsRemaining>10){
                         errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout
                         log("Sending another transaction status request after 10 seconds...");
                         log("Remaining seconds until error handling timeout: " + secondsRemaining);
-//                    String serviceID = transactionStatusResponse.getMessageReference().getServiceID();
                         try {
                             TimeUnit.SECONDS.sleep(10);
                             checkTransactionStatus(currentServiceID, "");
@@ -345,6 +373,9 @@ public class PaymentActivity extends AppCompatActivity {
     private void doLogin() {
         currentServiceID = MessageHeaderUtil.generateServiceID();
         try {
+            currentTransaction = MessageCategory.Login;
+            startTransactionUi();
+
             //Set timeout
             prevSecond = System.currentTimeMillis();
             secondsRemaining = (int) (loginTimeout/1000);
@@ -353,8 +384,6 @@ public class PaymentActivity extends AppCompatActivity {
             log("Sending message to websocket server: " + "\n" + loginRequest.toJson());
             fusionClient.connect();
             fusionClient.sendMessage(loginRequest);
-            currentTransaction = MessageCategory.Login;
-            startTransactionUi();
 
             // Loop for Listener
             waitingForResponse = true;
@@ -378,6 +407,10 @@ public class PaymentActivity extends AppCompatActivity {
         String abortReason = "";
 
         try {
+            // Show Cancel button
+            currentTransaction = MessageCategory.Payment;
+            startTransactionUi();
+            clearLog();
             // Set timeout
             prevSecond = System.currentTimeMillis();
             secondsRemaining = (int) (paymentTimeout/1000);
@@ -386,10 +419,6 @@ public class PaymentActivity extends AppCompatActivity {
             log("Sending message to websocket server: " + "\n" + paymentRequest.toJson());
             fusionClient.connect();
             fusionClient.sendMessage(paymentRequest);
-            currentTransaction = MessageCategory.Payment;
-
-            // Show Cancel button
-            startTransactionUi();
 
             waitingForResponse = true;
             while(waitingForResponse) {
@@ -424,6 +453,8 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void checkTransactionStatus(String serviceID, String abortReason) {
         try {
+            currentTransaction = MessageCategory.TransactionStatus;
+            startTransactionUi();
             hideCancelBtn(true);
             if (abortReason != "") {
                 doAbort(serviceID, abortReason);
@@ -436,13 +467,11 @@ public class PaymentActivity extends AppCompatActivity {
             log("Sending transaction status request to check status of payment... " + "\n" + transactionStatusRequest.toJson());
             fusionClient.connect();
             fusionClient.sendMessage(transactionStatusRequest);
-            currentTransaction = MessageCategory.TransactionStatus;
 
             // Set timeout
             prevSecond = System.currentTimeMillis();
             secondsRemaining = (int) (errorHandlingTimeout/1000);
 
-            startTransactionUi();
             waitingForResponse = true;
             while(waitingForResponse) {
                 Listen();
@@ -658,6 +687,9 @@ public class PaymentActivity extends AppCompatActivity {
             progressCircle.setVisibility(View.VISIBLE);
             respUiHeader.setText(currentTransaction.toString().toUpperCase() + " IN PROGRESS");
             respUiDetail.setText("...");
+            btnLogin.setEnabled(false);
+            btnPurchase.setEnabled(false);
+            btnRefund.setEnabled(false);
         });
     }
 
@@ -667,6 +699,10 @@ public class PaymentActivity extends AppCompatActivity {
             btnCancel.setVisibility(View.INVISIBLE);
             respUiDetail.setText("");
             timer.setText("0");
+
+            btnLogin.setEnabled(true);
+            btnPurchase.setEnabled(true);
+            btnRefund.setEnabled(true);
         });
     }
 
@@ -715,6 +751,12 @@ public class PaymentActivity extends AppCompatActivity {
         if(stopWaiting){
             waitingForResponse = false;
         }
+    }
+
+    private void clearLog() {
+        handler.post(() ->
+                jsonLogs.setText("")
+        );
     }
     private void log(String logData) {
         System.out.println(sdf.format(new Date(System.currentTimeMillis())) + ": " + logData); // 2021.03.24.16.34.26

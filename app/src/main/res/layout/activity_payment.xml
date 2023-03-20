@@ -116,7 +116,8 @@
                     android:layout_gravity="bottom"
                     android:textColor="@color/white"
                     android:gravity="bottom"
-                    android:scrollbars = "vertical" />
+                    android:scrollbars = "vertical"
+                    android:textIsSelectable="true"/>
             </TableRow>
         </TableLayout>
 
