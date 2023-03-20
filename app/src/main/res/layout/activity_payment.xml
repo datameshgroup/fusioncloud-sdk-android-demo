@@ -72,10 +72,8 @@
             </TableRow>
 
             <TableRow
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:weightSum="5">
-
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
                 <Button
                     android:id="@+id/btnLogin"
@@ -114,11 +112,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:inputType="none|textMultiLine"
-                    android:scrollbars="vertical"
                     android:text=""
                     android:layout_gravity="bottom"
                     android:textColor="@color/white"
-                    tools:ignore="SpeakableTextPresentCheck" />
+                    android:gravity="bottom"
+                    android:scrollbars = "vertical" />
             </TableRow>
         </TableLayout>
 

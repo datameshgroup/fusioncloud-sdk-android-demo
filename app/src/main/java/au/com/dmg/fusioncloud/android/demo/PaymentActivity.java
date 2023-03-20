@@ -3,6 +3,7 @@ package au.com.dmg.fusioncloud.android.demo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -124,6 +125,9 @@ public class PaymentActivity extends AppCompatActivity {
         inputProductCode = findViewById(R.id.input_product_code);
 
         jsonLogs = findViewById(R.id.edit_text_json_logs);
+        jsonLogs.setMovementMethod(new ScrollingMovementMethod());
+
+
         respUiHeader = findViewById(R.id.text_view_ui_header);
         respUiDetail = findViewById(R.id.text_view_ui_details);
         respReceipt = findViewById(R.id.text_view_receipt);
@@ -232,7 +236,6 @@ public class PaymentActivity extends AppCompatActivity {
                         displayPaymentResponseMessage(fmr);
                         break;
                     case TransactionStatus:
-                        System.out.println("trans here handle");
                         handleTransactionResponseMessage(fmr);
                         break;
                 }
@@ -276,16 +279,21 @@ public class PaymentActivity extends AppCompatActivity {
         waitingForResponse=false;
     }
 
+    // Only called when there is no repeated message response on the transaction status
+    private void displayTransactionResponseMessage(ErrorCondition errorCondition, String additionalResponse){
+        endTransactionUi();
+        handler.post(()->{
+            respUiHeader.setText(errorCondition.toString() + " - " + additionalResponse);
+        });
+    }
+
     //TODO: FIX TRANSACTION STATUS RESPONSE. STOPS HERE.
     private void handleTransactionResponseMessage(FusionMessageResponse fmr) {
         // TODO: handle transaction status response for others. currently designed for Payment only.
-        System.out.println("trans HERE");
         TransactionStatusResponse transactionStatusResponse = null;
         Response responseBody = null;
 
                 if (fmr.isSuccessful) {
-                    System.out.println("trans HERE success");
-
                     transactionStatusResponse = ((SaleToPOIResponse)fmr.saleToPOI).getTransactionStatusResponse();
                     responseBody = transactionStatusResponse.getResponse();
                     log(String.format("Transaction Status Result: %s ", responseBody.getResult()));
@@ -305,7 +313,6 @@ public class PaymentActivity extends AppCompatActivity {
                     waitingForResponse = false;
 
                 } else if (fmr.errorCondition == ErrorCondition.InProgress) {
-                    System.out.println("trans HERE inprogress");
                     log("Transaction in progress...");
 //                    log(String.format("Error Condition: %s, Additional Response: %s",
 //                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
@@ -324,18 +331,12 @@ public class PaymentActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    System.out.println("trans HERE else");
                     transactionStatusResponse = ((SaleToPOIResponse)fmr.saleToPOI).getTransactionStatusResponse();
                     responseBody = transactionStatusResponse.getResponse();
                     log(String.format("Error Condition: %s, Additional Response: %s",
-                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
-                    Response paymentResponseBody = transactionStatusResponse
-                            .getRepeatedMessageResponse().getRepeatedResponseMessageBody()
-                            .getPaymentResponse().getResponse();
+                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()), true);
 
-                    FusionMessageResponse paymentFmr = new FusionMessageResponse();
-                    paymentFmr.setMessage(false, MessageType.Response, MessageCategory.Payment,(SaleToPOI) paymentResponseBody, responseBody.getAdditionalResponse().toUpperCase());
-                    displayPaymentResponseMessage(paymentFmr);
+                    displayTransactionResponseMessage(responseBody.getErrorCondition(), responseBody.getAdditionalResponse());
                 }
 
 
@@ -349,7 +350,7 @@ public class PaymentActivity extends AppCompatActivity {
             secondsRemaining = (int) (loginTimeout/1000);
 
             SaleToPOIRequest loginRequest = buildLoginRequest(currentServiceID);
-            log("Sending message to websocket server: " + "\n" + loginRequest);
+            log("Sending message to websocket server: " + "\n" + loginRequest.toJson());
             fusionClient.connect();
             fusionClient.sendMessage(loginRequest);
             currentTransaction = MessageCategory.Login;
@@ -382,7 +383,7 @@ public class PaymentActivity extends AppCompatActivity {
             secondsRemaining = (int) (paymentTimeout/1000);
 
             SaleToPOIRequest paymentRequest = buildPaymentRequest(currentServiceID);
-            log("Sending message to websocket server: " + "\n" + paymentRequest);
+            log("Sending message to websocket server: " + "\n" + paymentRequest.toJson());
             fusionClient.connect();
             fusionClient.sendMessage(paymentRequest);
             currentTransaction = MessageCategory.Payment;
@@ -417,7 +418,7 @@ public class PaymentActivity extends AppCompatActivity {
         });
         SaleToPOIRequest abortTransactionPOIRequest = buildAbortRequest(serviceID, abortReason);
 
-        log("Sending abort message to websocket server: " + "\n" + abortTransactionPOIRequest);
+        log("Sending abort message to websocket server: " + "\n" + abortTransactionPOIRequest.toJson());
         fusionClient.sendMessage(abortTransactionPOIRequest);
     }
 
@@ -432,8 +433,7 @@ public class PaymentActivity extends AppCompatActivity {
             });
             SaleToPOIRequest transactionStatusRequest = buildTransactionStatusRequest(serviceID);
 
-            log("Sending transaction status request to check status of payment...");
-
+            log("Sending transaction status request to check status of payment... " + "\n" + transactionStatusRequest.toJson());
             fusionClient.connect();
             fusionClient.sendMessage(transactionStatusRequest);
             currentTransaction = MessageCategory.TransactionStatus;
@@ -710,7 +710,7 @@ public class PaymentActivity extends AppCompatActivity {
         handler.post(() ->
             jsonLogs.append(
     //        System.out.println(
-                    sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData) // 2021.03.24.16.34.26
+                    sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData + "\n\n") // 2021.03.24.16.34.26
         );
         if(stopWaiting){
             waitingForResponse = false;
@@ -719,7 +719,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void log(String logData) {
         System.out.println(sdf.format(new Date(System.currentTimeMillis())) + ": " + logData); // 2021.03.24.16.34.26
         handler.post(() ->
-                jsonLogs.append(sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData)
+                jsonLogs.append(sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData + "\n\n")
         );
     }
 
