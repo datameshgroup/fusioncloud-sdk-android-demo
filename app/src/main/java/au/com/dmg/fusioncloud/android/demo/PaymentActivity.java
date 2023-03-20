@@ -61,7 +61,7 @@ import au.com.dmg.fusion.response.paymentresponse.PaymentResult;
 import au.com.dmg.fusion.securitytrailer.SecurityTrailer;
 import au.com.dmg.fusion.util.MessageHeaderUtil;
 import au.com.dmg.fusion.util.SecurityTrailerUtil;
-
+//TODO: Fix - Timer is not starting if there's no connection
 public class PaymentActivity extends AppCompatActivity {
 
     ExecutorService executorService;
@@ -160,13 +160,17 @@ public class PaymentActivity extends AppCompatActivity {
         this.fusionClient.setSettings(saleID, poiID, kek); // replace with the Sale ID provided by DataMesh
 
 
-        executorService = Executors.newSingleThreadExecutor();
-
         Button btnLogin = findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(v -> executorService.submit(()-> doLogin()));
+        btnLogin.setOnClickListener(v -> {
+            executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(()-> doLogin());
+        });
 
         Button btnPurchase = findViewById(R.id.btnPurchase);
-        btnPurchase.setOnClickListener(v -> executorService.submit(()-> doPayment()));
+        btnPurchase.setOnClickListener(v -> {
+            executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(()-> doPayment());
+        });
 
         Button btnRefund = findViewById(R.id.btnRefund);
 //        btnRefund.setOnClickListener(v -> doRefund());
@@ -192,13 +196,15 @@ public class PaymentActivity extends AppCompatActivity {
             if(saleToPOI==null) return;
 
             FusionMessageHandler fmh = new FusionMessageHandler();
+            FusionMessageResponse fmr = null;
             if(saleToPOI instanceof SaleToPOIRequest) {
 
-                FusionMessageResponse fmr = fmh.handle((SaleToPOIRequest) saleToPOI);
+                fmr = fmh.handle((SaleToPOIRequest) saleToPOI);
 
                 /* DISPLAY SaleToPOIRequest*/
+                FusionMessageResponse finalFmr = fmr;
                 handler.post(() -> {
-                    respUiDetail.setText(fmr.displayMessage);
+                    respUiDetail.setText(finalFmr.displayMessage);
                 });
 
                 //Reset timeout (Not applicable to transaction status)
@@ -211,7 +217,7 @@ public class PaymentActivity extends AppCompatActivity {
 
             if (saleToPOI instanceof SaleToPOIResponse) {
                 System.out.println("LISTEN SaleToPOIResponse");
-                FusionMessageResponse fmr = fmh.handle((SaleToPOIResponse) saleToPOI);
+                fmr = fmh.handle((SaleToPOIResponse) saleToPOI);
                 switch (fmr.messageCategory){
                     case Event: // This only logs an Event
                         SaleToPOIResponse spr = (SaleToPOIResponse) fmr.saleToPOI;
@@ -304,15 +310,17 @@ public class PaymentActivity extends AppCompatActivity {
 //                    log(String.format("Error Condition: %s, Additional Response: %s",
 //                            responseBody.getErrorCondition(), responseBody.getAdditionalResponse()));
 
-                    errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout
-                    log("Sending another transaction status request after 10 seconds...");
-                    log("Remaining seconds until error handling timeout: " + secondsRemaining);
+                    if(secondsRemaining>10){
+                        errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout
+                        log("Sending another transaction status request after 10 seconds...");
+                        log("Remaining seconds until error handling timeout: " + secondsRemaining);
 //                    String serviceID = transactionStatusResponse.getMessageReference().getServiceID();
-                    try {
-                        TimeUnit.SECONDS.sleep(10);
-                        checkTransactionStatus(currentServiceID, "");
-                    } catch (InterruptedException e) {
-                        log(e);
+                        try {
+                            TimeUnit.SECONDS.sleep(10);
+                            checkTransactionStatus(currentServiceID, "");
+                        } catch (InterruptedException e) {
+                            log(e);
+                        }
                     }
 
                 } else {
@@ -336,16 +344,15 @@ public class PaymentActivity extends AppCompatActivity {
     private void doLogin() {
         currentServiceID = MessageHeaderUtil.generateServiceID();
         try {
+            //Set timeout
+            prevSecond = System.currentTimeMillis();
+            secondsRemaining = (int) (loginTimeout/1000);
 
             SaleToPOIRequest loginRequest = buildLoginRequest(currentServiceID);
             log("Sending message to websocket server: " + "\n" + loginRequest);
             fusionClient.connect();
             fusionClient.sendMessage(loginRequest);
-
-            //Set timeout
-            prevSecond = System.currentTimeMillis();
-            secondsRemaining = (int) (loginTimeout/1000);
-
+            currentTransaction = MessageCategory.Login;
             startTransactionUi();
 
             // Loop for Listener
@@ -370,15 +377,15 @@ public class PaymentActivity extends AppCompatActivity {
         String abortReason = "";
 
         try {
+            // Set timeout
+            prevSecond = System.currentTimeMillis();
+            secondsRemaining = (int) (paymentTimeout/1000);
+
             SaleToPOIRequest paymentRequest = buildPaymentRequest(currentServiceID);
             log("Sending message to websocket server: " + "\n" + paymentRequest);
             fusionClient.connect();
             fusionClient.sendMessage(paymentRequest);
             currentTransaction = MessageCategory.Payment;
-
-            // Set timeout
-            prevSecond = System.currentTimeMillis();
-            secondsRemaining = (int) (paymentTimeout/1000);
 
             // Show Cancel button
             startTransactionUi();
@@ -427,6 +434,7 @@ public class PaymentActivity extends AppCompatActivity {
 
             log("Sending transaction status request to check status of payment...");
 
+            fusionClient.connect();
             fusionClient.sendMessage(transactionStatusRequest);
             currentTransaction = MessageCategory.TransactionStatus;
 
@@ -437,16 +445,16 @@ public class PaymentActivity extends AppCompatActivity {
             startTransactionUi();
             waitingForResponse = true;
             while(waitingForResponse) {
+                Listen();
                 if(secondsRemaining < 1) {
-                    log("Transaction Status Request Timeout...", true);
                     endTransactionUi();
                     handler.post(()->{
                         respUiHeader.setText("Time Out");
                         respUiDetail.setText("Please check Satellite Transaction History");
+                        log("Transaction Status Request Timeout...", true);
                     });
                     break;
                 }
-                Listen();
             }
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);

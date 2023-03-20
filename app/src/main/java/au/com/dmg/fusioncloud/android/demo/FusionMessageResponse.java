@@ -40,11 +40,11 @@ public class FusionMessageResponse {
         this.displayMessage = displayMsg;
         this.errorCondition=null;
     }
-    public void setMessage(boolean isSuccessful, ErrorCondition err) {
+    public void setMessage(boolean isSuccessful, MessageType messageType, MessageCategory messageCategory, SaleToPOI saleToPOI, ErrorCondition err) {
         this.isSuccessful = isSuccessful;
-        this.messageType = null;
-        this.messageCategory = null;
-        this.saleToPOI = null;
+        this.messageType = messageType;
+        this.messageCategory = messageCategory;
+        this.saleToPOI = saleToPOI;
         this.displayMessage = "";
         this.errorCondition=err;
     }

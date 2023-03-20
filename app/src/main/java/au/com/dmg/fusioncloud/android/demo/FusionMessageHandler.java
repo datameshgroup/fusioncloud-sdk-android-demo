@@ -85,7 +85,7 @@ public class FusionMessageHandler {
                     fusionMessageResponse.setMessage(true, MessageType.Response, MessageCategory.TransactionStatus, response, "TRANSACTION STATUS FOUND");
                 }else{
                     ErrorCondition errorCondition = response.getTransactionStatusResponse().getResponse().getErrorCondition();
-                    fusionMessageResponse.setMessage(false, errorCondition);
+                    fusionMessageResponse.setMessage(false,  MessageType.Response, MessageCategory.TransactionStatus, response, errorCondition);
                 }
                 break;
         }
