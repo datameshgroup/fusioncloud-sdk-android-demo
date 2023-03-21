@@ -270,10 +270,6 @@ public class PaymentActivity extends AppCompatActivity {
         //add receipt logic
         endTransactionUi();
         handler.post(() ->{
-//            if(fmr.isSuccessful)
-//            {
-//                respUiHeader.setfo;
-//            }
             respUiHeader.setText(fmr.displayMessage);
 
 //            respReceipt.setText(msg.rece);
