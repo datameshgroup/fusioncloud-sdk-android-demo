@@ -434,13 +434,13 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void doAbort(String serviceID, String abortReason){
-//        waitingForResponse=false;
-
-        endTransactionUi();
+        endTransactionUi(); // this will hide the timer. Rethink this.
 
         handler.post(()-> {
            respUiHeader.setText("ABORTING TRANSACTION");
+           respUiDetail.setText("");
         });
+        hideProgressCircle(false);
         SaleToPOIRequest abortTransactionPOIRequest = buildAbortRequest(serviceID, abortReason);
 
         log("Sending abort message to websocket server: " + "\n" + abortTransactionPOIRequest.toJson());
