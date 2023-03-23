@@ -281,7 +281,6 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void displayPaymentResponseMessage(FusionMessageResponse fmr) {
-        //add receipt logic
         endTransactionUi();
 
         PaymentResponse paymentResponse = ((SaleToPOIResponse)fmr.saleToPOI).getPaymentResponse();
@@ -326,12 +325,11 @@ public class PaymentActivity extends AppCompatActivity {
 
     //Currently only called from transactionstatus response
     private void displayPaymentResponseMessage(PaymentResponse pr, MessageHeader mh) {
-        //add receipt logic
         endTransactionUi();
         runOnUiThread(() ->{
             respUiHeader.setText("PAYMENT " + pr.getResponse().getResult().toString().toUpperCase());
 
-//            respReceipt.setText(msg.rece);
+
             PaymentResult paymentResult = pr.getPaymentResult();
 
             respAuthourizedAmount.setText(paymentResult.getAmountsResp().getAuthorizedAmount().toString());
@@ -358,7 +356,6 @@ public class PaymentActivity extends AppCompatActivity {
         });
     }
 
-
     private void handleTransactionResponseMessage(FusionMessageResponse fmr) {
         // TODO: handle transaction status response for others. currently designed for Payment only.
         TransactionStatusResponse transactionStatusResponse = null;
@@ -384,7 +381,6 @@ public class PaymentActivity extends AppCompatActivity {
                             this.executorService.shutdownNow();
                             executorService = Executors.newSingleThreadExecutor();
                             executorService.submit(()->checkTransactionStatus(currentServiceID, ""));
-//                            checkTransactionStatus(currentServiceID, "");
                         } catch (InterruptedException e) {
                             endLog(e);
                         }
@@ -469,7 +465,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void doAbort(String serviceID, String abortReason){
-        endTransactionUi(); // this will hide the timer. Rethink this.
+        endTransactionUi();
 
         runOnUiThread(()-> {
            respUiHeader.setText("ABORTING TRANSACTION");
@@ -558,7 +554,6 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private LoginRequest buildLoginRequest() throws ConfigurationException {
-        // Login Request
         SaleSoftware saleSoftware = new SaleSoftware.Builder()//
                 .providerIdentification(providerIdentification)//
                 .applicationName(applicationName)//
@@ -589,7 +584,6 @@ public class PaymentActivity extends AppCompatActivity {
 
         BigDecimal requestedAmount = inputAmount.add(inputTip);
 
-        // Payment Request
          SaleTransactionID saleTransactionID = new SaleTransactionID.Builder()//
                 .transactionID("transactionID" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()))////
                 .timestamp(Instant.now()).build();
@@ -639,7 +633,6 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private TransactionStatusRequest buildTransactionStatusRequest(String serviceID) throws ConfigurationException {
-        // Transaction Status Request
         MessageReference messageReference = new MessageReference.Builder()//
                 .messageCategory(MessageCategory.Payment)//
                 .POIID(poiID)//
@@ -668,13 +661,11 @@ public class PaymentActivity extends AppCompatActivity {
         BigDecimal inputAmount = new BigDecimal(inputItemAmount.getText().toString());
         String productCode = String.valueOf(inputProductCode.getText());
 
-        // Payment Request
         SaleTransactionID saleTransactionID = new SaleTransactionID.Builder()//
                 .transactionID("transactionID" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()))////
                 .timestamp(Instant.now()).build();
 
         SaleData saleData = new SaleData.Builder()//
-                // .operatorID("")//
                 .operatorLanguage("en")//
                 .saleTransactionID(saleTransactionID)//
                 .build();
