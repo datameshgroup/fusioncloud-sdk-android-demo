@@ -47,6 +47,7 @@
     <string name="match">Smooth and creamy matcha sweetened just right and served with steamed milk. This
     favorite will transport your senses to pure green delight. </string>
     <string name="requestedamount">RequestedAmount</string>
+    <string name="itemamount">ItemAmount</string>
     <string name="tipamount">TipAmount</string>
     <string name="product_code">Product Code</string>
     <string name="ui_header">Transaction UI Display</string>

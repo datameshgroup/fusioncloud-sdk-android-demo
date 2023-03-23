@@ -1,10 +1,12 @@
 package au.com.dmg.fusioncloud.android.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -24,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.ConfigurationException;
-import javax.naming.Context;
 
 import au.com.dmg.fusion.MessageHeader;
 import au.com.dmg.fusion.SaleToPOI;
@@ -56,6 +58,7 @@ import au.com.dmg.fusion.response.EventNotification;
 import au.com.dmg.fusion.response.Response;
 import au.com.dmg.fusion.response.SaleToPOIResponse;
 import au.com.dmg.fusion.response.TransactionStatusResponse;
+import au.com.dmg.fusion.response.paymentresponse.PaymentReceipt;
 import au.com.dmg.fusion.response.paymentresponse.PaymentResponse;
 import au.com.dmg.fusion.response.paymentresponse.PaymentResult;
 import au.com.dmg.fusion.util.MessageHeaderUtil;
@@ -85,10 +88,10 @@ public class PaymentActivity extends AppCompatActivity {
 
     boolean waitingForResponse;
     int secondsRemaining;
-    MessageCategory currentTransaction = MessageCategory.Login; // TODO: currentTransaction validation
+    MessageCategory currentTransaction = MessageCategory.Login;
     String currentServiceID;
 
-    EditText inputRequestedAmount;
+    EditText inputItemAmount;
     EditText inputTipAmount;
     EditText inputProductCode;
 
@@ -105,8 +108,6 @@ public class PaymentActivity extends AppCompatActivity {
     EditText respMaskedPAN;
     EditText respPaymentBrand;
     EditText respEntryMode;
-    EditText respPaymentType;
-    EditText respTransactionID;
     EditText respServiceID;
 
 
@@ -119,10 +120,9 @@ public class PaymentActivity extends AppCompatActivity {
     ProgressBar progressCircle;
 
     String abortReason = "";
-    Handler uiHandler;
 
     void initUI (){
-        inputRequestedAmount = findViewById(R.id.input_requested_amount);
+        inputItemAmount = findViewById(R.id.input_item_amount);
         inputTipAmount = findViewById(R.id.input_tip_amount);
         inputProductCode = findViewById(R.id.input_product_code);
 
@@ -133,6 +133,7 @@ public class PaymentActivity extends AppCompatActivity {
         respUiHeader = findViewById(R.id.text_view_ui_header);
         respUiDetail = findViewById(R.id.text_view_ui_details);
         respReceipt = findViewById(R.id.text_view_receipt);
+        respReceipt.setMovementMethod(new ScrollingMovementMethod());
 
         respAuthourizedAmount = findViewById(R.id.response_authorize_amount_value);
         respTipAmount = findViewById(R.id.response_tip_amount_value);
@@ -140,8 +141,6 @@ public class PaymentActivity extends AppCompatActivity {
         respMaskedPAN = findViewById(R.id.response_masked_pan);
         respPaymentBrand = findViewById(R.id.response_payment_brand);
         respEntryMode = findViewById(R.id.response_entry_mode);
-        respPaymentType = findViewById(R.id.response_payment_type);
-        respTransactionID = findViewById(R.id.response_transaction_id);
         respServiceID = findViewById(R.id.response_service_id);
 
         timer = findViewById(R.id.text_timer);
@@ -181,9 +180,6 @@ public class PaymentActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         progressCircle = findViewById(R.id.progressCircle);
         initUI();
-
-        // UI thread
-        uiHandler = new Handler(Looper.getMainLooper());
     }
 
 
@@ -193,8 +189,6 @@ public class PaymentActivity extends AppCompatActivity {
         try {
             //Update timer text
             prevSecond = computeSecondsRemaining(prevSecond);
-//            runOnUiThread(()->timer.setText(String.valueOf(secondsRemaining)));
-            uiHandler.post(() ->timer.setText(String.valueOf(secondsRemaining)));
 
             SaleToPOI saleToPOI = null;
             saleToPOI = fusionClient.readMessage();
@@ -211,7 +205,7 @@ public class PaymentActivity extends AppCompatActivity {
 
                 /* DISPLAY SaleToPOIRequest*/
                 FusionMessageResponse finalFmr = fmr;
-                uiHandler.post(() -> {
+                runOnUiThread(() -> {
                     respUiDetail.setText(finalFmr.displayMessage);
                 });
 
@@ -267,16 +261,15 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void displayLoginResponseMessage(FusionMessageResponse fmr) {
-        // TODO Clean Validations here.
         endTransactionUi();
-        uiHandler.post(() -> respUiHeader.setText(fmr.displayMessage));
+        runOnUiThread(() -> respUiHeader.setText(fmr.displayMessage));
         waitingForResponse=false;
     }
 
     private void displayPaymentResponseMessage(FusionMessageResponse fmr) {
         //add receipt logic
         endTransactionUi();
-        uiHandler.post(() ->{
+        runOnUiThread(() ->{
             respUiHeader.setText(fmr.displayMessage);
 
 //            respReceipt.setText(msg.rece);
@@ -289,9 +282,11 @@ public class PaymentActivity extends AppCompatActivity {
             respMaskedPAN.setText(paymentResult.getPaymentInstrumentData().getCardData().getMaskedPAN());
             respPaymentBrand.setText(paymentResult.getPaymentInstrumentData().getCardData().getPaymentBrand().toString());
             respEntryMode.setText(paymentResult.getPaymentInstrumentData().getCardData().getEntryMode().toString());
-            respPaymentType.setText(paymentResult.getPaymentType().toString());
-            respTransactionID.setText(paymentResponse.getPoiData().getPOITransactionID().getTransactionID());
             respServiceID.setText(fmr.saleToPOI.getMessageHeader().getServiceID());
+            // Receipt
+            PaymentReceipt paymentReceipt = paymentResponse.getPaymentReceipt().get(0);
+            String OutputXHTML = paymentReceipt.getReceiptContentAsHtml();
+            respReceipt.setText(HtmlCompat.fromHtml(OutputXHTML, 0));
         });
         waitingForResponse=false;
     }
@@ -300,7 +295,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void displayPaymentResponseMessage(PaymentResponse pr, MessageHeader mh) {
         //add receipt logic
         endTransactionUi();
-        uiHandler.post(() ->{
+        runOnUiThread(() ->{
             respUiHeader.setText("PAYMENT " + pr.getResponse().getResult().toString().toUpperCase());
 
 //            respReceipt.setText(msg.rece);
@@ -312,9 +307,12 @@ public class PaymentActivity extends AppCompatActivity {
             respMaskedPAN.setText(paymentResult.getPaymentInstrumentData().getCardData().getMaskedPAN());
             respPaymentBrand.setText(paymentResult.getPaymentInstrumentData().getCardData().getPaymentBrand().toString());
             respEntryMode.setText(paymentResult.getPaymentInstrumentData().getCardData().getEntryMode().toString());
-            respPaymentType.setText(paymentResult.getPaymentType().toString());
-            respTransactionID.setText(pr.getPoiData().getPOITransactionID().getTransactionID());
             respServiceID.setText(mh.getServiceID());
+
+            //Receipt
+            PaymentReceipt paymentReceipt = pr.getPaymentReceipt().get(0);
+            String OutputXHTML = paymentReceipt.getReceiptContentAsHtml();
+            respReceipt.setText(HtmlCompat.fromHtml(OutputXHTML, 0));
         });
         waitingForResponse=false;
     }
@@ -322,7 +320,7 @@ public class PaymentActivity extends AppCompatActivity {
     // Only called when there is no repeated message response on the transaction status
     private void displayTransactionResponseMessage(ErrorCondition errorCondition, String additionalResponse){
         endTransactionUi();
-        uiHandler.post(()->{
+        runOnUiThread(()->{
             respUiHeader.setText(errorCondition.toString() + " - " + additionalResponse);
         });
     }
@@ -349,8 +347,7 @@ public class PaymentActivity extends AppCompatActivity {
                         log("Sending another transaction status request after 10 seconds...");
                         log("Remaining seconds until error handling timeout: " + secondsRemaining);
                         try {
-//                            TimeUnit.SECONDS.sleep(10);
-                            TimeUnit.SECONDS.wait(10);
+                            TimeUnit.SECONDS.sleep(10);
                             checkTransactionStatus(currentServiceID, "");
                         } catch (InterruptedException e) {
                             endLog(e);
@@ -438,7 +435,7 @@ public class PaymentActivity extends AppCompatActivity {
     private void doAbort(String serviceID, String abortReason){
         endTransactionUi(); // this will hide the timer. Rethink this.
 
-        uiHandler.post(()-> {
+        runOnUiThread(()-> {
            respUiHeader.setText("ABORTING TRANSACTION");
            respUiDetail.setText("");
         });
@@ -457,7 +454,7 @@ public class PaymentActivity extends AppCompatActivity {
             if (abortReason != "") {
                 doAbort(serviceID, abortReason);
             }
-            uiHandler.post(()-> {
+            runOnUiThread(()-> {
                 respUiHeader.setText("CHECKING TRANSACTION STATUS");
             });
             TransactionStatusRequest transactionStatusRequest = buildTransactionStatusRequest(serviceID);
@@ -474,7 +471,7 @@ public class PaymentActivity extends AppCompatActivity {
                 Listen();
                 if(secondsRemaining < 1) {
                     endTransactionUi();
-                    uiHandler.post(()->{
+                    runOnUiThread(()->{
                         respUiHeader.setText("Time Out");
                         respUiDetail.setText("Please check Satellite Transaction History");
                         endLog("Transaction Status Request Timeout...", true);
@@ -514,9 +511,11 @@ public class PaymentActivity extends AppCompatActivity {
 
     //TODO: Add tip
     private  PaymentRequest buildPaymentRequest() throws ConfigurationException {
-        String inputAmount = String.valueOf(inputRequestedAmount.getText());
-        String inputTip = String.valueOf(inputTipAmount.getText());
+        BigDecimal inputAmount = new BigDecimal(inputItemAmount.getText().toString());
+        BigDecimal inputTip = new BigDecimal(inputTipAmount.getText().toString());
         String productCode = String.valueOf(inputProductCode.getText());
+
+        BigDecimal requestedAmount = inputAmount.add(inputTip);
 
         // Payment Request
          SaleTransactionID saleTransactionID = new SaleTransactionID.Builder()//
@@ -531,7 +530,8 @@ public class PaymentActivity extends AppCompatActivity {
 
         AmountsReq amountsReq = new AmountsReq.Builder()//
                 .currency("AUD")//
-                .requestedAmount(new BigDecimal(inputAmount))//
+                .requestedAmount(requestedAmount)//
+                .tipAmount(inputTip)
                 .build();
 
         SaleItem saleItem = new SaleItem.Builder()//
@@ -540,7 +540,7 @@ public class PaymentActivity extends AppCompatActivity {
                 .unitOfMeasure(UnitOfMeasure.Other)//
                 .quantity(new BigDecimal(1))//
                 .unitPrice(new BigDecimal(100.00))//
-                .itemAmount(new BigDecimal(inputAmount))//
+                .itemAmount(inputAmount)//
                 .productLabel("Product Label")//
                 .build();
 
@@ -592,7 +592,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void startTransactionUi(){
-        uiHandler.post(()->{
+        runOnUiThread(()->{
             if(currentTransaction==MessageCategory.Payment){
                 System.out.println("currentServiceID---" + currentServiceID);
                 btnCancel.setOnClickListener(v->doAbort(currentServiceID, "User Cancelled"));
@@ -608,7 +608,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void endTransactionUi(){
-        uiHandler.post(()->{
+        runOnUiThread(()->{
             progressCircle.setVisibility(View.INVISIBLE);
             btnCancel.setVisibility(View.INVISIBLE);
             respUiDetail.setText("");
@@ -621,7 +621,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void hideCancelBtn(Boolean doHide){
-        uiHandler.post(()->{
+        runOnUiThread(()->{
            if(doHide){
                btnCancel.setVisibility(View.INVISIBLE);
            }else{
@@ -632,7 +632,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void hideProgressCircle(Boolean doHide){
-        uiHandler.post(()->{
+        runOnUiThread(()->{
             if(doHide){
                 progressCircle.setVisibility(View.INVISIBLE);
             }else{
@@ -645,7 +645,7 @@ public class PaymentActivity extends AppCompatActivity {
         long currentTime = System.currentTimeMillis();
         long sec = (currentTime - start) / 1000;
         if(sec==1) {
-            secondsRemaining--;
+            runOnUiThread(() ->timer.setText(String.valueOf(secondsRemaining--)));
             start = currentTime;
         }
         return start;
@@ -657,7 +657,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void endLog(String logData, Boolean stopWaiting) {
-        uiHandler.post(() ->
+        runOnUiThread(() ->
             jsonLogs.append(
                     sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData + "\n\n") // 2021.03.24.16.34.26
         );
@@ -667,13 +667,13 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void clearLog() {
-        uiHandler.post(() ->
+        runOnUiThread(() ->
                 jsonLogs.setText("")
         );
     }
     private void log(String logData) {
         System.out.println(sdf.format(new Date(System.currentTimeMillis())) + ": " + logData); // 2021.03.24.16.34.26
-        uiHandler.post(() ->
+        runOnUiThread(() ->
                 jsonLogs.append(sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData + "\n\n")
         );
     }
@@ -688,5 +688,25 @@ public class PaymentActivity extends AppCompatActivity {
         }
         pressedTime = System.currentTimeMillis();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.back, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        switch (item.getItemId()) {
+
+            case R.id.settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
 }

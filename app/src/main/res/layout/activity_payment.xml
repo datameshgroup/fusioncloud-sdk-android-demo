@@ -23,13 +23,11 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/label_requested_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/requestedamount" />
+                    android:id="@+id/label_item_amount"
+                    android:text="@string/itemamount" />
 
                 <EditText
-                    android:id="@+id/input_requested_amount"
+                    android:id="@+id/input_item_amount"
                     android:text="99.99"
                     android:inputType="numberDecimal"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -42,8 +40,6 @@
 
                 <TextView
                     android:id="@+id/label_tip_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/tipamount" />
 
                 <EditText
@@ -60,14 +56,13 @@
 
                 <TextView
                     android:id="@+id/label_product_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/product_code" />
 
                 <EditText
                     android:id="@+id/input_product_code"
                     android:hint="SampleProductCode"
-                    android:inputType="text"/>
+                    android:inputType="text"
+                    tools:ignore="TouchTargetSizeCheck" />
 
             </TableRow>
 
@@ -192,26 +187,12 @@
 
             </TableRow>
 
-            <TableRow android:layout_width="match_parent">
-
-                <TextView
-                    android:id="@+id/text_view_receipt"
-                    android:layout_weight="1"
-                    android:inputType="textMultiLine"
-                    android:minHeight="200sp"
-                    android:text="receipt here"
-                    android:textColor="@color/white" />
-
-            </TableRow>
-
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/responselbl_authorize_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/authourized_amount" />
 
                 <EditText
@@ -228,8 +209,6 @@
 
                 <TextView
                     android:id="@+id/responselbl_tip_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/tip_amount" />
 
                 <EditText
@@ -247,8 +226,6 @@
 
                 <TextView
                     android:id="@+id/responselbl_surcharge_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/surcharge_amount" />
 
                 <EditText
@@ -266,14 +243,13 @@
 
                 <TextView
                     android:id="@+id/responselbl_masked_pan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/masked_pan" />
 
                 <EditText
                     android:id="@+id/response_masked_pan"
                     android:layout_weight="1"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    tools:ignore="SpeakableTextPresentCheck" />
 
             </TableRow>
 
@@ -283,8 +259,6 @@
 
                 <TextView
                     android:id="@+id/responselbl_payment_brand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/payment_brand" />
 
                 <EditText
@@ -300,8 +274,6 @@
 
                 <TextView
                     android:id="@+id/responselbl_entry_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/entry_mode" />
 
                 <EditText
@@ -317,45 +289,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/responselbl_payment_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/payment_type" />
-
-                <EditText
-                    android:id="@+id/response_payment_type"
-                    android:layout_weight="1"
-                    android:inputType="none"
-                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/responselbl_transaction_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/transaction_id" />
-
-                <EditText
-                    android:id="@+id/response_transaction_id"
-                    android:layout_weight="1"
-                    android:inputType="none"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
                     android:id="@+id/responselbl_service_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/service_id" />
 
                 <EditText
@@ -365,7 +299,20 @@
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             </TableRow>
-
+            <TextView
+                android:text="Receipt:"
+                android:labelFor="@id/text_view_receipt"
+                />
+            <TableRow android:layout_width="match_parent">
+                <TextView
+                    android:id="@+id/text_view_receipt"
+                    android:layout_weight="1"
+                    android:background="#FAF9F6"
+                    android:fadeScrollbars="false"
+                    android:inputType="textMultiLine"
+                    android:maxHeight="250sp"
+                    android:minHeight="250sp"/>
+            </TableRow>
 
         </TableLayout>
 

@@ -34,11 +34,14 @@ public class SettingsActivity extends AppCompatActivity {
     EditText txtSoftwareVersion;
     EditText txtCertificationCode;
     EditText txtNexoURL;
+    Class previousClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+        previousClass = getIntent().getClass();
 
         txtSalesID = findViewById(R.id.txtSalesID);
         txtPOIID = findViewById(R.id.txtPOIID);
@@ -91,9 +94,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
 
             case R.id.back:
-                Intent i = new Intent(this, MainActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                finish();
                 return true;
 
             default:

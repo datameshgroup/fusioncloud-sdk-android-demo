@@ -59,7 +59,7 @@ public class FusionMessageHandler {
             case Event:
                 EventNotification eventNotification = response.getEventNotification();
                 log("Event Details: " + eventNotification.getEventDetails());
-                fusionMessageResponse.setMessage(MessageType.Response, MessageCategory.Event, response); //TODO successful but ignore?
+                fusionMessageResponse.setMessage(MessageType.Response, MessageCategory.Event, response);
                 break;
             case Login:
                 responseResult = response.getLoginResponse().getResponse().getResult();
