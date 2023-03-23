@@ -346,9 +346,13 @@ public class PaymentActivity extends AppCompatActivity {
                         errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout so it will not reset after waiting
                         log("Sending another transaction status request after 10 seconds...");
                         log("Remaining seconds until error handling timeout: " + secondsRemaining);
+                        System.out.println("ACTIVE THREADS " + Thread.activeCount());
                         try {
                             TimeUnit.SECONDS.sleep(10);
-                            checkTransactionStatus(currentServiceID, "");
+                            this.executorService.shutdownNow();
+                            executorService = Executors.newSingleThreadExecutor();
+                            executorService.submit(()->checkTransactionStatus(currentServiceID, ""));
+//                            checkTransactionStatus(currentServiceID, "");
                         } catch (InterruptedException e) {
                             endLog(e);
                         }
@@ -368,6 +372,8 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void doLogin() {
         try {
+            System.out.println("login ACTIVE THREADS " + Thread.activeCount());
+
             currentServiceID = MessageHeaderUtil.generateServiceID();
             currentTransaction = MessageCategory.Login;
             startTransactionUi();
@@ -397,6 +403,8 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void doPayment() {
         try {
+            System.out.println("payment ACTIVE THREADS " + Thread.activeCount());
+
             currentServiceID = MessageHeaderUtil.generateServiceID();
             currentTransaction = MessageCategory.Payment;
 
