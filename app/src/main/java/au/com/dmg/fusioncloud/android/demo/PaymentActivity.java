@@ -231,9 +231,9 @@ public class PaymentActivity extends AppCompatActivity {
                     case Event: // This only logs an Event
                         SaleToPOIResponse spr = (SaleToPOIResponse) fmr.saleToPOI;
                         EventNotification eventNotification = spr.getEventNotification();
-                        log("Ignoring Event below...");
-                        log(spr.toJson());
-                        log("Event Details: " + eventNotification.getEventDetails());
+                        log("Ignoring Event below...\n" +
+                                "spr.toJson()\n" +
+                                "Event Details: " + eventNotification.getEventDetails());
                         break;
                     case Login:
                         displayLoginResponseMessage(fmr);
@@ -344,8 +344,8 @@ public class PaymentActivity extends AppCompatActivity {
                     log("Transaction in progress...");
                     if(secondsRemaining>10){
                         errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout so it will not reset after waiting
-                        log("Sending another transaction status request after 10 seconds...");
-                        log("Remaining seconds until error handling timeout: " + secondsRemaining);
+                        log("Sending another transaction status request after 10 seconds...\n" +
+                                "Remaining seconds until error handling timeout: " + secondsRemaining);
                         System.out.println("ACTIVE THREADS " + Thread.activeCount());
                         try {
                             TimeUnit.SECONDS.sleep(10);
