@@ -1,7 +1,7 @@
 package au.com.dmg.fusioncloud.android.demo;
 
 import android.app.Application;
-
+// TODO: Will utilise this for Preauthorisation and Completion
 public class GlobalClass extends Application {
 
     private static GlobalClass instance;

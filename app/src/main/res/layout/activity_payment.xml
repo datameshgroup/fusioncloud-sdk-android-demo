@@ -68,7 +68,8 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:weightSum="6">
 
                 <Button
                     android:id="@+id/btnLogin"
@@ -92,6 +93,11 @@
                     android:id="@+id/btnRefund"
                     android:layout_weight="1"
                     android:text="Refund" />
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" >
+                </Space>
             </TableRow>
 
             <TableRow
@@ -171,7 +177,6 @@
                 android:id="@+id/text_timer"
                 android:inputType="none"
                 android:maxWidth="50sp"
-                android:text="60"
                 android:textAlignment="textEnd"
                 android:textSize="20sp" />
 

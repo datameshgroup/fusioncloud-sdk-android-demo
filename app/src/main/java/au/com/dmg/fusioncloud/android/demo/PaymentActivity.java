@@ -2,7 +2,6 @@ package au.com.dmg.fusioncloud.android.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.StrictMode;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
@@ -71,10 +70,10 @@ public class PaymentActivity extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");//
     private long pressedTime;
 
-    String providerIdentification = "Company A"; // test environment only - replace for production
-    String applicationName = "POS Retail"; // test environment only - replace for production
-    String softwareVersion = "01.00.00"; // test environment only - replace for production
-    String certificationCode = "98cf9dfc-0db7-4a92-8b8cb66d4d2d7169"; // test environment only - replace for production
+    String providerIdentification;
+    String applicationName;
+    String softwareVersion;
+    String certificationCode;
     String saleID;
     String poiID;
     String kek;
@@ -146,6 +145,25 @@ public class PaymentActivity extends AppCompatActivity {
         timer = findViewById(R.id.text_timer);
     }
 
+    private void initFusionClient() {
+        providerIdentification = Settings.getProviderIdentification();
+        applicationName = Settings.getApplicationName();
+        softwareVersion = Settings.getSoftwareVersion();
+        certificationCode = Settings.getCertificationCode();
+        saleID = Settings.getSaleId();
+        poiID = Settings.getPoiId();
+        kek = Settings.getKek();
+
+        this.fusionClient = new FusionClient(useTestEnvironment); //need to override this in production
+        this.fusionClient.setSettings(saleID, poiID, kek); // replace with the Sale ID provided by DataMesh
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        initFusionClient();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,13 +172,7 @@ public class PaymentActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        this.fusionClient = new FusionClient(useTestEnvironment); //need to override this in production
-
-        //these config values need to be configurable in POS
-        saleID = "VA POS"; // Replace with your test SaleId provided by DataMesh
-        poiID = "DMGVA002"; // Replace with your test POIID provided by DataMesh
-        kek = "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21"; //for dev only, need to be replaced with prod value in prod
-        this.fusionClient.setSettings(saleID, poiID, kek); // replace with the Sale ID provided by DataMesh
+        initFusionClient();
 
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
@@ -175,7 +187,10 @@ public class PaymentActivity extends AppCompatActivity {
         });
 
         btnRefund = findViewById(R.id.btnRefund);
-//        btnRefund.setOnClickListener(v -> doRefund());
+        btnRefund.setOnClickListener(v -> {
+            executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(()-> doRefund());
+        });
 
         btnCancel = findViewById(R.id.btnCancel);
         progressCircle = findViewById(R.id.progressCircle);
@@ -183,8 +198,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
 
-    /* UI Thread to display connection progress */
-
+    /* SaleToPOI Listener */
     void Listen(){
         try {
             //Update timer text
@@ -269,15 +283,32 @@ public class PaymentActivity extends AppCompatActivity {
     private void displayPaymentResponseMessage(FusionMessageResponse fmr) {
         //add receipt logic
         endTransactionUi();
+
+        PaymentResponse paymentResponse = ((SaleToPOIResponse)fmr.saleToPOI).getPaymentResponse();
+        PaymentType paymentType = paymentResponse.getPaymentResult().getPaymentType();
+        PaymentResult paymentResult = paymentResponse.getPaymentResult();
         runOnUiThread(() ->{
+        if (paymentType.equals(PaymentType.Normal)){
+
+                respUiHeader.setText(fmr.displayMessage);
+
+                respAuthourizedAmount.setText(paymentResult.getAmountsResp().getAuthorizedAmount().toString());
+                respTipAmount.setText(paymentResult.getAmountsResp().getTipAmount().toString());
+                respSurchargeAmount.setText(paymentResult.getAmountsResp().getSurchargeAmount().toString());
+                respMaskedPAN.setText(paymentResult.getPaymentInstrumentData().getCardData().getMaskedPAN());
+                respPaymentBrand.setText(paymentResult.getPaymentInstrumentData().getCardData().getPaymentBrand().toString());
+                respEntryMode.setText(paymentResult.getPaymentInstrumentData().getCardData().getEntryMode().toString());
+                respServiceID.setText(fmr.saleToPOI.getMessageHeader().getServiceID());
+                // Receipt
+                PaymentReceipt paymentReceipt = paymentResponse.getPaymentReceipt().get(0);
+                String OutputXHTML = paymentReceipt.getReceiptContentAsHtml();
+                respReceipt.setText(HtmlCompat.fromHtml(OutputXHTML, 0));
+
+        } else if(paymentType.equals(PaymentType.Refund)){
             respUiHeader.setText(fmr.displayMessage);
 
-//            respReceipt.setText(msg.rece);
-            PaymentResponse paymentResponse = ((SaleToPOIResponse)fmr.saleToPOI).getPaymentResponse();
-            PaymentResult paymentResult = paymentResponse.getPaymentResult();
-
             respAuthourizedAmount.setText(paymentResult.getAmountsResp().getAuthorizedAmount().toString());
-            respTipAmount.setText(paymentResult.getAmountsResp().getTipAmount().toString());
+            respTipAmount.setText("0.00");
             respSurchargeAmount.setText(paymentResult.getAmountsResp().getSurchargeAmount().toString());
             respMaskedPAN.setText(paymentResult.getPaymentInstrumentData().getCardData().getMaskedPAN());
             respPaymentBrand.setText(paymentResult.getPaymentInstrumentData().getCardData().getPaymentBrand().toString());
@@ -287,6 +318,8 @@ public class PaymentActivity extends AppCompatActivity {
             PaymentReceipt paymentReceipt = paymentResponse.getPaymentReceipt().get(0);
             String OutputXHTML = paymentReceipt.getReceiptContentAsHtml();
             respReceipt.setText(HtmlCompat.fromHtml(OutputXHTML, 0));
+        }
+
         });
         waitingForResponse=false;
     }
@@ -346,7 +379,6 @@ public class PaymentActivity extends AppCompatActivity {
                         errorHandlingTimeout = (secondsRemaining - 10) * 1000; //decrement errorHandlingTimeout so it will not reset after waiting
                         log("Sending another transaction status request after 10 seconds...\n" +
                                 "Remaining seconds until error handling timeout: " + secondsRemaining);
-                        System.out.println("ACTIVE THREADS " + Thread.activeCount());
                         try {
                             TimeUnit.SECONDS.sleep(10);
                             this.executorService.shutdownNow();
@@ -372,8 +404,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void doLogin() {
         try {
-            System.out.println("login ACTIVE THREADS " + Thread.activeCount());
-
             currentServiceID = MessageHeaderUtil.generateServiceID();
             currentTransaction = MessageCategory.Login;
             startTransactionUi();
@@ -403,8 +433,6 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void doPayment() {
         try {
-            System.out.println("payment ACTIVE THREADS " + Thread.activeCount());
-
             currentServiceID = MessageHeaderUtil.generateServiceID();
             currentTransaction = MessageCategory.Payment;
 
@@ -492,6 +520,43 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
+    private void doRefund() {
+        try {
+            currentServiceID = MessageHeaderUtil.generateServiceID();
+            currentTransaction = MessageCategory.Payment;
+
+            startTransactionUi();
+            clearLog();
+            // Set timeout
+            prevSecond = System.currentTimeMillis();
+            secondsRemaining = (int) (paymentTimeout/1000);
+
+            PaymentRequest refundRequest = buildRefundRequest();
+            log("Sending message to websocket server: " + "\n" + refundRequest.toJson());
+            fusionClient.sendMessage(refundRequest, currentServiceID);
+
+            waitingForResponse = true;
+            while(waitingForResponse) {
+                Listen();
+                if(secondsRemaining < 1) {
+                    abortReason = "Timeout";
+                    endLog("Refund Request Timeout...", true);
+                    checkTransactionStatus(currentServiceID, abortReason);
+                    break;
+                }
+            }
+        } catch (ConfigurationException e) {
+            endLog(String.format("Exception: %s", e), true);
+            abortReason = "Other Exception";
+            checkTransactionStatus(currentServiceID, abortReason);
+        } catch (FusionException e){
+            endLog(String.format("FusionException: %s. Resending the Request...", e), true);
+            // Continue the timer
+            paymentTimeout = secondsRemaining * 1000L;
+            doPayment();
+        }
+    }
+
     private LoginRequest buildLoginRequest() throws ConfigurationException {
         // Login Request
         SaleSoftware saleSoftware = new SaleSoftware.Builder()//
@@ -517,8 +582,7 @@ public class PaymentActivity extends AppCompatActivity {
         return loginRequest;
     }
 
-    //TODO: Add tip
-    private  PaymentRequest buildPaymentRequest() throws ConfigurationException {
+    private PaymentRequest buildPaymentRequest() throws ConfigurationException {
         BigDecimal inputAmount = new BigDecimal(inputItemAmount.getText().toString());
         BigDecimal inputTip = new BigDecimal(inputTipAmount.getText().toString());
         String productCode = String.valueOf(inputProductCode.getText());
@@ -588,6 +652,7 @@ public class PaymentActivity extends AppCompatActivity {
         return transactionStatusRequest;
     }
 
+
     private AbortTransactionRequest buildAbortRequest(String referenceServiceID, String abortReason) {
 
         MessageReference messageReference = new MessageReference.Builder()
@@ -599,10 +664,61 @@ public class PaymentActivity extends AppCompatActivity {
         return abortTransactionRequest;
     }
 
+    private PaymentRequest buildRefundRequest() throws ConfigurationException {
+        BigDecimal inputAmount = new BigDecimal(inputItemAmount.getText().toString());
+        String productCode = String.valueOf(inputProductCode.getText());
+
+        // Payment Request
+        SaleTransactionID saleTransactionID = new SaleTransactionID.Builder()//
+                .transactionID("transactionID" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()))////
+                .timestamp(Instant.now()).build();
+
+        SaleData saleData = new SaleData.Builder()//
+                // .operatorID("")//
+                .operatorLanguage("en")//
+                .saleTransactionID(saleTransactionID)//
+                .build();
+
+        AmountsReq amountsReq = new AmountsReq.Builder()//
+                .currency("AUD")//
+                .requestedAmount(inputAmount)//
+                .build();
+
+        SaleItem saleItem = new SaleItem.Builder()//
+                .itemID(0)//
+                .productCode(productCode)//
+                .unitOfMeasure(UnitOfMeasure.Other)//
+                .quantity(new BigDecimal(1))//
+                .unitPrice(new BigDecimal(100.00))//
+                .itemAmount(inputAmount)//
+                .productLabel("Product Label")//
+                .build();
+
+        PaymentInstrumentData paymentInstrumentData = new PaymentInstrumentData.Builder()//
+                .paymentInstrumentType(PaymentInstrumentType.Cash)//
+                .build();
+
+        PaymentData refundData = new PaymentData.Builder()//
+                .paymentType(PaymentType.Refund)//
+                .paymentInstrumentData(paymentInstrumentData)//
+                .build();
+
+        PaymentTransaction paymentTransaction = new PaymentTransaction.Builder()//
+                .amountsReq(amountsReq)//
+                .addSaleItem(saleItem)//
+                .build();
+
+        PaymentRequest refundRequest = new PaymentRequest.Builder()//
+                .paymentTransaction(paymentTransaction)//
+                .paymentData(refundData)//
+                .saleData(saleData).build();
+
+        return refundRequest;
+    }
+
     private void startTransactionUi(){
         runOnUiThread(()->{
             if(currentTransaction==MessageCategory.Payment){
-                System.out.println("currentServiceID---" + currentServiceID);
                 btnCancel.setOnClickListener(v->doAbort(currentServiceID, "User Cancelled"));
                 btnCancel.setVisibility(View.VISIBLE);
             }

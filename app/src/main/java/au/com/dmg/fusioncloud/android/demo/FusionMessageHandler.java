@@ -3,6 +3,7 @@ package au.com.dmg.fusioncloud.android.demo;
 import au.com.dmg.fusion.data.ErrorCondition;
 import au.com.dmg.fusion.data.MessageCategory;
 import au.com.dmg.fusion.data.MessageType;
+import au.com.dmg.fusion.data.PaymentType;
 import au.com.dmg.fusion.request.SaleToPOIRequest;
 import au.com.dmg.fusion.request.displayrequest.DisplayRequest;
 import au.com.dmg.fusion.response.EventNotification;
@@ -72,8 +73,12 @@ public class FusionMessageHandler {
                 break;
             case Payment:
                 responseResult = response.getPaymentResponse().getResponse().getResult();
+                PaymentType paymentType = response.getPaymentResponse().getPaymentResult().getPaymentType();
+                String type = "";
+                if(paymentType.equals(PaymentType.Normal)){ type="Payment"; }
+                else {type=paymentType.name();}
                 if (responseResult == ResponseResult.Success){
-                    fusionMessageResponse.setMessage(true, MessageType.Response, MessageCategory.Payment, response, "PAYMENT SUCCESSFUL");
+                    fusionMessageResponse.setMessage(true, MessageType.Response, MessageCategory.Payment, response, type.toUpperCase() + " SUCCESSFUL");
                 }else {
                     String additionalResponse = response.getPaymentResponse().getResponse().getAdditionalResponse();
                     fusionMessageResponse.setMessage(false, MessageType.Response, MessageCategory.Payment, response, additionalResponse);

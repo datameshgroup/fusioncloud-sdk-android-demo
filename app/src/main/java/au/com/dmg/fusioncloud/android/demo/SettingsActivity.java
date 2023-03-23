@@ -11,21 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
-/*
-    String certificateLocation = Settings.certificateLocation;
-    String serverDomain = Settings.serverDomain;
-    String socketProtocol = Settings.socketProtocol;
-
-    String kekValue = Settings.kekValue;
-    String keyIdentifier = Settings.keyIdentifier;
-    String keyVersion = Settings.keyVersion;
-
-    String providerIdentification = Settings.providerIdentification;
-    String applicationName = Settings.applicationName;
-    String softwareVersion = Settings.softwareVersion;
-    String certificationCode = Settings.certificationCode;
-*/
-
     EditText txtSalesID;
     EditText txtPOIID;
     EditText txtKEK;
@@ -33,7 +18,6 @@ public class SettingsActivity extends AppCompatActivity {
     EditText txtApplicationName;
     EditText txtSoftwareVersion;
     EditText txtCertificationCode;
-    EditText txtNexoURL;
     Class previousClass;
 
     @Override
@@ -50,8 +34,6 @@ public class SettingsActivity extends AppCompatActivity {
         txtApplicationName = findViewById(R.id.txtApplicationName);
         txtSoftwareVersion = findViewById(R.id.txtSoftwareVersion);
         txtCertificationCode = findViewById(R.id.txtCertificationCode);
-        txtNexoURL = findViewById(R.id.txtNexoURL);
-
         getvalues();
 
         //disable editing for Static Sales Systems
@@ -66,14 +48,13 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void getvalues() {
-        txtSalesID.setText(Settings.saleId);
-        txtPOIID.setText(Settings.poiId);
-        txtKEK.setText(Settings.kekValue);
-        txtProviderIdentifiction.setText(Settings.providerIdentification);
-        txtApplicationName.setText(Settings.applicationName);
-        txtSoftwareVersion.setText(Settings.softwareVersion);
-        txtCertificationCode.setText(Settings.certificationCode);
-        txtNexoURL.setText(Settings.serverDomain);
+        txtSalesID.setText(Settings.getSaleId());
+        txtPOIID.setText(Settings.getPoiId());
+        txtKEK.setText(Settings.getKek());
+        txtProviderIdentifiction.setText(Settings.getProviderIdentification());
+        txtApplicationName.setText(Settings.getApplicationName());
+        txtSoftwareVersion.setText(Settings.getSoftwareVersion());
+        txtCertificationCode.setText(Settings.getCertificationCode());
     }
 
     @Override
@@ -105,15 +86,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         private void savesettings () {
         try{
-            Settings.poiId = txtPOIID.getText().toString();
-            Settings.saleId = txtSalesID.getText().toString();
-            Settings.kekValue = txtKEK.getText().toString();
-            Settings.serverDomain = txtNexoURL.getText().toString();
+            Settings.setPoiId(txtPOIID.getText().toString());
+            Settings.setSaleId(txtSalesID.getText().toString());
+            Settings.setKek(txtKEK.getText().toString());
 
-            Settings.providerIdentification = txtProviderIdentifiction.getText().toString();
-            Settings.applicationName = txtApplicationName.getText().toString();
-            Settings.softwareVersion = txtSoftwareVersion.getText().toString();
-            Settings.certificationCode = txtCertificationCode.getText().toString();
+            Settings.setProviderIdentification(txtProviderIdentifiction.getText().toString());
+            Settings.setApplicationName(txtApplicationName.getText().toString());;
+            Settings.setSoftwareVersion(txtSoftwareVersion.getText().toString());
+            Settings.setCertificationCode(txtCertificationCode.getText().toString());
 
             Toast.makeText(getApplicationContext(),"Settings Updated",Toast.LENGTH_SHORT).show();
         }catch (Exception e){
