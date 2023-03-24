@@ -70,11 +70,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:weightSum="6">
-
                 <Button
                     android:id="@+id/btnLogin"
                     android:layout_weight="1"
-                    android:text="Login"/>
+                    android:text="Login"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/ciutadella_regular"/>
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -83,7 +84,9 @@
                 <Button
                     android:id="@+id/btnPurchase"
                     android:layout_weight="1"
-                    android:text="Purchase" />
+                    android:text="Purchase"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/ciutadella_regular"/>
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -92,7 +95,9 @@
                 <Button
                     android:id="@+id/btnRefund"
                     android:layout_weight="1"
-                    android:text="Refund" />
+                    android:text="Refund"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/ciutadella_regular"/>
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -111,14 +116,26 @@
                 <TextView
                     android:id="@+id/edit_text_json_logs"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:inputType="none|textMultiLine"
-                    android:text=""
                     android:layout_gravity="bottom"
-                    android:textColor="@color/white"
+                    android:layout_weight="1"
+                    android:fadeScrollbars="false"
+                    android:fontFamily="@font/ciutadella_regular"
                     android:gravity="bottom"
-                    android:scrollbars = "vertical"
-                    android:textIsSelectable="true"/>
+                    android:inputType="none"
+                    android:lineSpacingExtra="1sp"
+                    android:longClickable="true"
+                    android:scrollIndicators="end"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:scrollbarSize="5sp"
+                    android:scrollbarStyle="insideOverlay"
+                    android:scrollbarThumbVertical="@color/colorPrimary"
+                    android:scrollbars="vertical"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textColorHighlight="@color/colorPrimary"
+                    android:textIsSelectable="true" />
             </TableRow>
         </TableLayout>
 
@@ -188,7 +205,10 @@
                 <Button
                     android:id="@+id/btnCancel"
                     android:text="Cancel"
-                    android:visibility="invisible" />
+                    android:visibility="invisible"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/ciutadella_regular"
+                    />
 
             </TableRow>
 
@@ -198,6 +218,8 @@
 
                 <TextView
                     android:id="@+id/responselbl_authorize_amount"
+                    android:layout_width="168dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/authourized_amount" />
 
                 <EditText
@@ -301,6 +323,8 @@
                     android:id="@+id/response_service_id"
                     android:layout_weight="1"
                     android:inputType="none"
+                    android:lineSpacingExtra="0sp"
+                    android:textStyle="italic"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             </TableRow>
@@ -308,15 +332,25 @@
                 android:text="Receipt:"
                 android:labelFor="@id/text_view_receipt"
                 />
-            <TableRow android:layout_width="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                >
+
                 <TextView
                     android:id="@+id/text_view_receipt"
                     android:layout_weight="1"
                     android:background="#FAF9F6"
                     android:fadeScrollbars="false"
                     android:inputType="textMultiLine"
+                    android:lineSpacingExtra="1sp"
                     android:maxHeight="250sp"
-                    android:minHeight="250sp"/>
+                    android:minHeight="250sp"
+                    android:scrollbarThumbVertical="@color/colorAccent"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:scrollbarStyle="insideOverlay"
+                    android:scrollbars="vertical"
+                    android:scrollbarSize="5sp"/>
             </TableRow>
 
         </TableLayout>

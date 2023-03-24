@@ -16,6 +16,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.HtmlCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.squareup.moshi.Json;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -126,7 +132,7 @@ public class PaymentActivity extends AppCompatActivity {
         inputProductCode = findViewById(R.id.input_product_code);
 
         jsonLogs = findViewById(R.id.edit_text_json_logs);
-        jsonLogs.setMovementMethod(new ScrollingMovementMethod());
+        jsonLogs.setTextIsSelectable(true);
 
 
         respUiHeader = findViewById(R.id.text_view_ui_header);
@@ -209,7 +215,7 @@ public class PaymentActivity extends AppCompatActivity {
 
             if(saleToPOI==null) return;
 
-            log("Response Received: \n" + saleToPOI.toJson());
+            log("Response Received: \n" + prettyPrintJson(saleToPOI));
 
             FusionMessageHandler fmh = new FusionMessageHandler();
             FusionMessageResponse fmr = null;
@@ -246,7 +252,7 @@ public class PaymentActivity extends AppCompatActivity {
                         SaleToPOIResponse spr = (SaleToPOIResponse) fmr.saleToPOI;
                         EventNotification eventNotification = spr.getEventNotification();
                         log("Ignoring Event below...\n" +
-                                "spr.toJson()\n" +
+                                 prettyPrintJson(spr) + "\n" +
                                 "Event Details: " + eventNotification.getEventDetails());
                         break;
                     case Login:
@@ -409,7 +415,7 @@ public class PaymentActivity extends AppCompatActivity {
             secondsRemaining = (int) (loginTimeout/1000);
 
             LoginRequest loginRequest = buildLoginRequest();
-            log("Sending message to websocket server: " + "\n" + loginRequest.toJson());
+            log("Sending message to websocket server: " + "\n" + prettyPrintJson((loginRequest)));
             fusionClient.sendMessage(loginRequest, currentServiceID);
 
             // Loop for Listener
@@ -439,7 +445,7 @@ public class PaymentActivity extends AppCompatActivity {
             secondsRemaining = (int) (paymentTimeout/1000);
 
             PaymentRequest paymentRequest = buildPaymentRequest();
-            log("Sending message to websocket server: " + "\n" + paymentRequest.toJson());
+            log("Sending message to websocket server: " + "\n" + prettyPrintJson(paymentRequest));
             fusionClient.sendMessage(paymentRequest, currentServiceID);
 
             waitingForResponse = true;
@@ -474,7 +480,7 @@ public class PaymentActivity extends AppCompatActivity {
         hideProgressCircle(false);
         AbortTransactionRequest abortTransactionPOIRequest = buildAbortRequest(serviceID, abortReason);
 
-        log("Sending abort message to websocket server: " + "\n" + abortTransactionPOIRequest.toJson());
+        log("Sending abort message to websocket server: " + "\n" + prettyPrintJson(abortTransactionPOIRequest));
         fusionClient.sendMessage(abortTransactionPOIRequest);
     }
 
@@ -491,7 +497,7 @@ public class PaymentActivity extends AppCompatActivity {
             });
             TransactionStatusRequest transactionStatusRequest = buildTransactionStatusRequest(serviceID);
 
-            log("Sending transaction status request to check status of payment... " + "\n" + transactionStatusRequest.toJson());
+            log("Sending transaction status request to check status of payment... " + "\n" + prettyPrintJson(transactionStatusRequest));
             fusionClient.sendMessage(transactionStatusRequest);
 
             // Set timeout
@@ -528,7 +534,7 @@ public class PaymentActivity extends AppCompatActivity {
             secondsRemaining = (int) (paymentTimeout/1000);
 
             PaymentRequest refundRequest = buildRefundRequest();
-            log("Sending message to websocket server: " + "\n" + refundRequest.toJson());
+            log("Sending message to websocket server: " + "\n" + prettyPrintJson(refundRequest));
             fusionClient.sendMessage(refundRequest, currentServiceID);
 
             waitingForResponse = true;
@@ -580,6 +586,7 @@ public class PaymentActivity extends AppCompatActivity {
     private PaymentRequest buildPaymentRequest() throws ConfigurationException {
         BigDecimal inputAmount = new BigDecimal(inputItemAmount.getText().toString());
         BigDecimal inputTip = new BigDecimal(inputTipAmount.getText().toString());
+//        BigDecimal inputTip = new BigDecimal(inputTipAmount.getText().toString() ? ); // TODO: if null
         String productCode = String.valueOf(inputProductCode.getText());
 
         BigDecimal requestedAmount = inputAmount.add(inputTip);
@@ -791,6 +798,11 @@ public class PaymentActivity extends AppCompatActivity {
         runOnUiThread(() ->
                 jsonLogs.append(sdf.format(new Date(System.currentTimeMillis())) + ": \n" + logData + "\n\n")
         );
+    }
+
+    String prettyPrintJson(Object json){
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        return gson.toJson(json);
     }
 
     @Override
