@@ -183,7 +183,6 @@ public class PaymentActivity extends AppCompatActivity {
 
         initUI();
         runOnUiThread(()->{
-            System.out.println("VANTEST");
         });
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
@@ -767,11 +766,9 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     public long computeSecondsRemaining(long start) {
-        System.out.println("VANTEST1");
         long currentTime = System.currentTimeMillis();
         long sec = (currentTime - start) / 1000;
         if(sec==1) {
-            System.out.println("VANTEST2");
             PaymentActivity.this.runOnUiThread(() ->timer.setText(String.valueOf(secondsRemaining--)));
             start = currentTime;
         }
