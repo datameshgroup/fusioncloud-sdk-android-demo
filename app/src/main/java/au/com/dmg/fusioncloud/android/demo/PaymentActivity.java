@@ -69,6 +69,7 @@ import au.com.dmg.fusion.response.paymentresponse.PaymentResult;
 import au.com.dmg.fusion.util.MessageHeaderUtil;
 
 //TODO: Fix - Timer is not starting if there's no connection
+//TODO: Add timer for building messages
 public class PaymentActivity extends AppCompatActivity {
 
     ExecutorService executorService;
