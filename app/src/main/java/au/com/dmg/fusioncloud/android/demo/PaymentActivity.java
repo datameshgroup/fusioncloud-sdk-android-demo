@@ -774,12 +774,6 @@ public class PaymentActivity extends AppCompatActivity {
             PaymentActivity.this.runOnUiThread(() ->timer.setText(String.valueOf(secondsRemaining--)));
             start = currentTime;
         }
-        else {
-            System.out.println("VANTEST");
-            System.out.println("sec " + sec);
-            System.out.println("prevtime " + start);
-            System.out.println("currentTime " + currentTime);
-        }
         return start;
     }
 
