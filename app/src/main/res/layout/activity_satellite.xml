@@ -7,7 +7,7 @@
 
     <Button
         android:id="@+id/btnReversalReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="30dp"
         android:text="Reversal"
@@ -18,7 +18,7 @@
 
     <Button
         android:id="@+id/btnCashoutReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:text="Cashout"
@@ -29,7 +29,7 @@
 
     <Button
         android:id="@+id/btnTransactionStatusReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:text="Transaction Status"
@@ -40,7 +40,7 @@
 
     <Button
         android:id="@+id/btnCardAcquisitionReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:text="Card Acquisition"
@@ -51,7 +51,7 @@
 
     <Button
         android:id="@+id/btnPreauthReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:text="Preauth"
@@ -62,7 +62,7 @@
 
     <Button
         android:id="@+id/btnCompletionReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:text="Completion"
@@ -73,7 +73,7 @@
 
     <Button
         android:id="@+id/btnRefundReq"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
         android:text="Refund"

@@ -149,6 +149,7 @@ public class PaymentActivity extends AppCompatActivity {
         respServiceID = findViewById(R.id.response_service_id);
 
         timer = findViewById(R.id.text_timer);
+        progressCircle = findViewById(R.id.progressCircle);
     }
 
     private void initFusionClient() {
@@ -180,6 +181,10 @@ public class PaymentActivity extends AppCompatActivity {
 
         initFusionClient();
 
+        initUI();
+        runOnUiThread(()->{
+            System.out.println("VANTEST");
+        });
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
             executorService = Executors.newSingleThreadExecutor();
@@ -199,8 +204,6 @@ public class PaymentActivity extends AppCompatActivity {
         });
 
         btnCancel = findViewById(R.id.btnCancel);
-        progressCircle = findViewById(R.id.progressCircle);
-        initUI();
     }
 
 
@@ -229,7 +232,7 @@ public class PaymentActivity extends AppCompatActivity {
                     respUiDetail.setText(finalFmr.displayMessage);
                 });
 
-                //Reset timeout (Not applicable to transaction status)
+                //Reset timer when a message is received (Not applicable to transaction status AKA error handling)
                 if(currentTransaction.equals(MessageCategory.Payment)){
                     secondsRemaining = (int) (paymentTimeout/1000); //Converting to seconds
                 }
@@ -764,10 +767,12 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     public long computeSecondsRemaining(long start) {
+        System.out.println("VANTEST1");
         long currentTime = System.currentTimeMillis();
         long sec = (currentTime - start) / 1000;
         if(sec==1) {
-            runOnUiThread(() ->timer.setText(String.valueOf(secondsRemaining--)));
+            System.out.println("VANTEST2");
+            PaymentActivity.this.runOnUiThread(() ->timer.setText(String.valueOf(secondsRemaining--)));
             start = currentTime;
         }
         return start;

@@ -219,7 +219,6 @@
                 <TextView
                     android:id="@+id/responselbl_authorize_amount"
                     android:layout_width="168dp"
-                    android:layout_height="wrap_content"
                     android:text="@string/authourized_amount" />
 
                 <EditText
