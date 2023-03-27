@@ -182,8 +182,7 @@ public class PaymentActivity extends AppCompatActivity {
         initFusionClient();
 
         initUI();
-        runOnUiThread(()->{
-        });
+
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
             executorService = Executors.newSingleThreadExecutor();
@@ -412,13 +411,13 @@ public class PaymentActivity extends AppCompatActivity {
             currentTransaction = MessageCategory.Login;
             startTransactionUi();
 
-            //Set timeout
-            prevSecond = System.currentTimeMillis();
-            secondsRemaining = (int) (loginTimeout/1000);
-
             LoginRequest loginRequest = buildLoginRequest();
             log("Sending message to websocket server: " + "\n" + prettyPrintJson((loginRequest)));
             fusionClient.sendMessage(loginRequest, currentServiceID);
+
+            //Set timeout
+            prevSecond = System.currentTimeMillis();
+            secondsRemaining = (int) (loginTimeout/1000);
 
             // Loop for Listener
             waitingForResponse = true;
@@ -442,13 +441,14 @@ public class PaymentActivity extends AppCompatActivity {
 
             startTransactionUi();
             clearLog();
-            // Set timeout
-            prevSecond = System.currentTimeMillis();
-            secondsRemaining = (int) (paymentTimeout/1000);
 
             PaymentRequest paymentRequest = buildPaymentRequest();
             log("Sending message to websocket server: " + "\n" + prettyPrintJson(paymentRequest));
             fusionClient.sendMessage(paymentRequest, currentServiceID);
+
+            // Set timeout
+            prevSecond = System.currentTimeMillis();
+            secondsRemaining = (int) (paymentTimeout/1000);
 
             waitingForResponse = true;
             while(waitingForResponse) {
@@ -531,13 +531,14 @@ public class PaymentActivity extends AppCompatActivity {
 
             startTransactionUi();
             clearLog();
-            // Set timeout
-            prevSecond = System.currentTimeMillis();
-            secondsRemaining = (int) (paymentTimeout/1000);
 
             PaymentRequest refundRequest = buildRefundRequest();
             log("Sending message to websocket server: " + "\n" + prettyPrintJson(refundRequest));
             fusionClient.sendMessage(refundRequest, currentServiceID);
+
+            // Set timeout
+            prevSecond = System.currentTimeMillis();
+            secondsRemaining = (int) (paymentTimeout/1000);
 
             waitingForResponse = true;
             while(waitingForResponse) {
@@ -728,6 +729,7 @@ public class PaymentActivity extends AppCompatActivity {
             btnLogin.setEnabled(false);
             btnPurchase.setEnabled(false);
             btnRefund.setEnabled(false);
+            timer.setText("60");
         });
     }
 
@@ -771,6 +773,12 @@ public class PaymentActivity extends AppCompatActivity {
         if(sec==1) {
             PaymentActivity.this.runOnUiThread(() ->timer.setText(String.valueOf(secondsRemaining--)));
             start = currentTime;
+        }
+        else {
+            System.out.println("VANTEST");
+            System.out.println("sec " + sec);
+            System.out.println("prevtime " + start);
+            System.out.println("currentTime " + currentTime);
         }
         return start;
     }
