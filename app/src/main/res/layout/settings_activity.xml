@@ -7,7 +7,7 @@
     android:paddingTop="16dp"
     android:paddingRight="16dp"
     android:paddingBottom="16dp"
-    tools:context="fusioncloud.sdk.android.SettingsActivity">
+    tools:context="au.com.dmg.fusioncloud.android.demo.SettingsActivity">
 
     <TableLayout
         android:id="@+id/tableLayout"
@@ -102,31 +102,6 @@
                 android:inputType="text"
                 android:minHeight="48dp"
                 android:text="KEK" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/tv8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView3"
-                android:layout_alignParentStart="true"
-                android:text="Nexo URL"
-                android:textSize="18sp"
-                tools:layout_editor_absoluteX="13dp"
-                tools:layout_editor_absoluteY="456dp" />
-
-            <EditText
-                android:id="@+id/txtNexoURL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="text"
-                android:text="txtNexoURL"
-                tools:ignore="TouchTargetSizeCheck" />
         </TableRow>
 
     </TableLayout>
