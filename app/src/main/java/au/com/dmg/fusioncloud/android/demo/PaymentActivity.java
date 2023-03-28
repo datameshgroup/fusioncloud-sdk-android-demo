@@ -730,7 +730,6 @@ public class PaymentActivity extends AppCompatActivity {
             btnLogin.setEnabled(false);
             btnPurchase.setEnabled(false);
             btnRefund.setEnabled(false);
-            timer.setText("60");
         });
     }
 
@@ -829,9 +828,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
-
             case R.id.settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
