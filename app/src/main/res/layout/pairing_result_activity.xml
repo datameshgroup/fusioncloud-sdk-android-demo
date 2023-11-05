@@ -1,55 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PairingResultActivity"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:background="@color/colorGrey"
     android:gravity="center"
-    android:paddingTop="32sp"
-    android:paddingBottom="32sp"
+    android:padding="32dp"
+    tools:context=".PairingResultActivity"
     >
+    <TableLayout
+        android:id="@+id/tblTerminalPairing"
+        android:background="@drawable/shapes"
+        android:layout_width="560dp"
+        android:layout_height="560dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+        <TableRow
+            android:id="@+id/tr_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="50dip"
+            >
+            <TextView
+                android:id="@+id/lblPairingResult"
+                android:background="#E91E63"
+                android:textColor="@color/white"
+                android:inputType="text"
+                android:text="Pairing Failed"
+                android:textAlignment="center"
+                android:textSize="32sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/lblPairingResult"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="#E91E63"
-        android:textColor="@color/white"
-        android:inputType="text"
-        android:text="Pairing Failed"
-        android:textAlignment="center"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.18" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="50dip"
+            >
+            <TextView
+                android:id="@+id/txtPairingDetail"
+                android:layout_height="150dp"
+                android:layout_width="match_parent"
+                android:inputType="text"
+                android:text="description of error"
+                android:paddingHorizontal="100dip"
+                android:textAlignment="center"
+                android:textSize="24sp" />
 
-    <TextView
-        android:id="@+id/txtPairingDetail"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="#E91E63"
-        android:inputType="text"
-        android:text="description of error"
-        android:textColor="@color/white"
-        android:textAlignment="center"
-        android:textSize="32sp"
-        app:layout_constraintTop_toBottomOf="@+id/lblPairingResult" />
+        </TableRow>
 
-    <Button
-        android:id="@+id/btnNext"
-        android:layout_width="200sp"
-        android:layout_height="80sp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:text="Next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.921"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPairingDetail"
-        app:layout_constraintVertical_bias="0.684" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="50dip"
+            android:paddingVertical="20dip">
+
+
+                <Button
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/btnNext"
+                    android:text="Next"
+                    android:layout_gravity="right"
+                    />
+
+        </TableRow>
+    </TableLayout>
+
+</FrameLayout>

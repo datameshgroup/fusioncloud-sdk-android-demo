@@ -62,7 +62,7 @@ import javax.naming.ConfigurationException
 
 //TODO: Fix - Timer is not starting if there's no connection
 //TODO: Add timer for building messages
-class PaymentActivity : AppCompatActivity() {
+class TestTransactionActivity : AppCompatActivity() {
     private lateinit var executorService: ExecutorService
     var sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") //
     private var pressedTime: Long = 0
@@ -152,7 +152,7 @@ class PaymentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.payment_activity)
+        setContentView(R.layout.test_transaction_activity)
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         initFusionClient()

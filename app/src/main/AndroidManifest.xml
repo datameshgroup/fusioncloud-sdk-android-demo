@@ -54,7 +54,7 @@
 <!--            </intent-filter>-->
         </activity>
         <activity
-            android:name="au.com.dmg.fusioncloud.android.demo.PaymentActivity"
+            android:name="au.com.dmg.fusioncloud.android.demo.TestTransactionActivity"
             android:exported="true"> <!--android:exported="false">-->
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

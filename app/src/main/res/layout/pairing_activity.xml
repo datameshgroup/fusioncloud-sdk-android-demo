@@ -13,8 +13,8 @@
     <TableLayout
         android:id="@+id/tblTerminalPairing"
         android:background="@drawable/shapes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="560dp"
+        android:layout_height="560dp"
         android:layout_gravity="center"
         android:padding="50dip"
         android:gravity="center">
@@ -124,7 +124,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:layout_marginLeft="20dip"
+                android:layout_marginLeft="10dip"
                 android:text="Cancel" />
 
             <Button
@@ -132,7 +132,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:layout_marginLeft="20dip"
+                android:layout_marginLeft="10dip"
                 android:text="Next"/>
         </TableRow>
 

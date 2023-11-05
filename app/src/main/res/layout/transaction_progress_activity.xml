@@ -12,8 +12,8 @@
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tblProgress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="560dp"
+        android:layout_height="560dp"
         android:layout_gravity="center"
         android:background="@drawable/shapes"
         android:paddingTop="50dip"
@@ -68,6 +68,7 @@
             android:textAlignment="textEnd"
             android:textSize="20sp"
             android:layout_margin="32dp"
+            android:paddingRight="100dp"
             />
 
         <TableRow

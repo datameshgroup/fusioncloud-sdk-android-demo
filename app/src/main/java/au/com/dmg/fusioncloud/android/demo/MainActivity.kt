@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun openPaymentActivity() {
-        val intent = Intent(this, PaymentActivity::class.java)
+        val intent = Intent(this, TestTransactionActivity::class.java)
         startActivity(intent)
     }
 
