@@ -45,11 +45,11 @@ class PairingActivity: AppCompatActivity() {
 
     var receivedPOIID: String? = null
     //SaleID, unique to the POS instance. Autogenerate this once per POS instance.
-    var s:String = UUID.randomUUID().toString()
+    var s:String = ""
     //PairingPOIID. This will be populated on the pairing response
     var p:String = ""
     //KEK. Autogenerate this once per POS instance.
-    var k:String = PairingData.CreateKEK();
+    var k:String = ""
     var currentServiceID = ""
     lateinit var fusionClient: FusionClient
 
@@ -64,9 +64,15 @@ class PairingActivity: AppCompatActivity() {
 
         fusionClient = FusionClient(useTestEnvironment)
 
+        k =PairingData.CreateKEK();
+        s = UUID.randomUUID().toString()
+        p = UUID.randomUUID().toString() //PairingPOIID
+
         println("Generated KEK:$k")
         println("Generated SaleID:$s")
+        println("Generated POIID:$p")
 
+        fusionClient.poiID = p
         fusionClient.saleID = s //Set MessageHeader.SaleID to the pairing QR code SaleID value
         fusionClient.kek = k
 
@@ -94,7 +100,7 @@ class PairingActivity: AppCompatActivity() {
             }
 //            try {
                 executorService = Executors.newSingleThreadExecutor()
-                executorService.submit(Runnable { doLogin() })
+                executorService.submit { doLogin() }
 //            }catch (e: FusionException) {
 //
 //                log(String.format("Cannot connect to FusionClient. Reason:\n %s", e))
@@ -236,11 +242,8 @@ class PairingActivity: AppCompatActivity() {
     private fun generateQRCode() {
         println("Generating QR Code...")
 
-        p = UUID.randomUUID().toString() //PairingPOIID
-        fusionClient.poiID = p
-        println("Generated POIID:$p")
         val c = Configuration.certificationCode //CertificationCode
-        val n = "Android Demo App v1.0A" //POS display name with at most 30 characters.
+        val n = Configuration.applicationName //POS display name with at most 30 characters.
 
         val newPairingData = createPairingData(
             s,
