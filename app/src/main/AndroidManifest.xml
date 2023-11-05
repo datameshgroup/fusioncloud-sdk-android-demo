@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="au.com.dmg.fusioncloud.android.demo.GlobalClass"
+        android:name="au.com.dmg.fusioncloud.android.demo.data.GlobalClass"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,12 +19,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FusionCloudSDKAndroidDemo">
         <activity
-            android:name="au.com.dmg.fusioncloud.android.demo.SettingsActivity"
-            android:exported="false"
-            android:label="SettingsActivity" />
-        <activity
-            android:name="au.com.dmg.fusioncloud.android.demo.ActivitySatellite"
+            android:name="au.com.dmg.fusioncloud.android.demo.ConfigurationActivity"
             android:exported="false" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.SatelliteActivity"
+            android:exported="false" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.PairingActivity"
+            android:exported="false" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.PairingResultActivity"
+            android:exported="false" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.TransactionProgressActivity"
+            android:exported="false" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.RequestActivity"
+            android:exported="true" >
+<!--                    <intent-filter>-->
+<!--                        <action android:name="android.intent.action.MAIN" />-->
+<!--                        <category android:name="android.intent.category.LAUNCHER" />-->
+<!--                    </intent-filter>-->
+        </activity>
         <activity
             android:name="au.com.dmg.fusioncloud.android.demo.MainActivity"
             android:exported="false">

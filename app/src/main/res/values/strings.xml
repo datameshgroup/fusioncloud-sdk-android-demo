@@ -16,5 +16,6 @@
     <string name="transaction_id">Transaction ID</string>
     <string name="masked_pan">Masked PAN</string>
     <string name="service_id">Service ID</string>
+    <string name="pairing_steps">1. On the DataMesh terminal, press the ⚙ (gear) icon, enter the merchant password, and press "Pair with POS"\n2. Scan the QR code using the DataMesh terminal, and follow the instructions on the terminal screen.\n3. After the terminal has successfully paired with the POS, press Next</string>
 
 </resources>

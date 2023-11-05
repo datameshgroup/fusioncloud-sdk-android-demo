@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "52883020391",
+    "project_id": "integration-test-4197e",
+    "storage_bucket": "integration-test-4197e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52883020391:android:d1442ee1731dc6e11d92c2",
+        "android_client_info": {
+          "package_name": "au.com.dmg.fusioncloud.android.demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRTg4rnwd4vnGPaXffHCMEkB6ZjL6VhlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

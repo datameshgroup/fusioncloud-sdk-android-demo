@@ -10,9 +10,9 @@
 
     <Button
         android:id="@+id/btnPayment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_width="350sp"
+        android:layout_height="100sp"
+        android:layout_marginTop="100sp"
         android:text="Payment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -21,9 +21,9 @@
 
     <Button
         android:id="@+id/btnSatellite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_width="350sp"
+        android:layout_height="100sp"
+        android:layout_marginTop="32sp"
         android:text="Sattelite"
         app:layout_constraintEnd_toEndOf="@+id/btnPayment"
         app:layout_constraintStart_toStartOf="@+id/btnPayment"

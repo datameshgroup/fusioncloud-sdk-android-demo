@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:background="@color/colorGrey"
+    android:gravity="center"
+    android:padding="32dp"
+    tools:context=".TransactionProgressActivity">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tblProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/shapes"
+        android:paddingTop="50dip"
+        android:paddingBottom="50dip"
+        android:gravity="center"
+        >
+
+        <TableRow
+            android:id="@+id/tr_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="50dip"
+            android:paddingHorizontal="100dip">
+
+            <TextView
+                android:id="@+id/text_view_ui_header"
+                android:layout_weight="1"
+                android:text="@string/ui_header"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="50dip">
+
+            <ProgressBar
+                android:id="@+id/progressCircle"
+                style="?android:attr/progressBarStyle"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/text_view_ui_details"
+                android:layout_weight="1"
+                android:inputType="none"
+                android:text="Display UI Detail Here"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+        </TableRow>
+
+        <TextView
+            android:id="@+id/text_timer"
+            android:inputType="none"
+            android:maxWidth="50sp"
+            android:text="0"
+            android:textAlignment="textEnd"
+            android:textSize="20sp"
+            android:layout_margin="32dp"
+            />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center|center_horizontal|center_vertical">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:fontFamily="@font/ciutadella_regular"
+                android:text="Cancel"
+                android:textAllCaps="false"/>
+
+            <Button
+                android:id="@+id/btnOK"
+                android:fontFamily="@font/ciutadella_regular"
+                android:text="OK"
+                android:textAllCaps="false"
+                android:visibility="gone"/>
+
+        </TableRow>
+
+
+    </TableLayout>
+
+</FrameLayout>

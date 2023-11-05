@@ -7,9 +7,9 @@
 
     <Button
         android:id="@+id/btnReversalReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="100sp"
         android:text="Reversal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -18,9 +18,9 @@
 
     <Button
         android:id="@+id/btnCashoutReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="20sp"
         android:text="Cashout"
         app:layout_constraintEnd_toEndOf="@+id/btnReversalReq"
         app:layout_constraintHorizontal_bias="0.0"
@@ -29,9 +29,9 @@
 
     <Button
         android:id="@+id/btnTransactionStatusReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="20sp"
         android:text="Transaction Status"
         app:layout_constraintEnd_toEndOf="@+id/btnCompletionReq"
         app:layout_constraintHorizontal_bias="0.0"
@@ -40,9 +40,9 @@
 
     <Button
         android:id="@+id/btnCardAcquisitionReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="20sp"
         android:text="Card Acquisition"
         app:layout_constraintEnd_toEndOf="@+id/btnTransactionStatusReq"
         app:layout_constraintHorizontal_bias="0.0"
@@ -51,9 +51,9 @@
 
     <Button
         android:id="@+id/btnPreauthReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="20sp"
         android:text="Preauth"
         app:layout_constraintEnd_toEndOf="@+id/btnRefundReq"
         app:layout_constraintHorizontal_bias="0.0"
@@ -62,9 +62,9 @@
 
     <Button
         android:id="@+id/btnCompletionReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="20sp"
         android:text="Completion"
         app:layout_constraintEnd_toEndOf="@+id/btnPreauthReq"
         app:layout_constraintHorizontal_bias="0.0"
@@ -73,13 +73,19 @@
 
     <Button
         android:id="@+id/btnRefundReq"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="350sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="20sp"
         android:text="Refund"
         app:layout_constraintEnd_toEndOf="@+id/btnCashoutReq"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/btnCashoutReq"
         app:layout_constraintTop_toBottomOf="@+id/btnCashoutReq" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="btnCompletionReq,btnCashoutReq,btnTransactionStatusReq,btnCardAcquisitionReq,btnPreauthReq,btnRefundReq" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
