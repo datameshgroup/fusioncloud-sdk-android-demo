@@ -41,6 +41,7 @@
                 android:layout_width="171dp"
                 android:layout_height="wrap_content"
                 android:text="SALE ID"
+                android:layout_weight="0.5"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
@@ -63,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="29sp"
                 android:text="POI ID"
+                android:layout_weight="0.5"
                 android:textSize="18sp" />
 
             <EditText
@@ -81,6 +83,7 @@
 
             <TextView
                 android:id="@+id/tv3"
+                android:layout_weight="0.5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="29sp"
@@ -121,6 +124,7 @@
 
             <TextView
                 android:id="@+id/textView2"
+                android:layout_weight="0.5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Provider Identification"
@@ -141,6 +145,7 @@
 
             <TextView
                 android:id="@+id/tv5"
+                android:layout_weight="0.5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Application Name"
@@ -161,6 +166,7 @@
 
             <TextView
                 android:id="@+id/tv6"
+                android:layout_weight="0.5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Software Version"
@@ -181,6 +187,7 @@
 
             <TextView
                 android:id="@+id/tv7"
+                android:layout_weight="0.5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Certification Code"
@@ -193,6 +200,35 @@
                 android:ems="10"
                 android:inputType="text"
                 android:text="txtCertificationCode" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:layout_weight="1" >
+            <FrameLayout android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <FrameLayout android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dip"
+                android:text="Save" />
+
+            <Button
+                android:id="@+id/btnExit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dip"
+                android:text="Exit"/>
         </TableRow>
 
 
