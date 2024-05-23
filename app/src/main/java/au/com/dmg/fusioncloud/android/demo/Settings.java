@@ -1,8 +1,8 @@
 package au.com.dmg.fusioncloud.android.demo;
 
 public class Settings {
-    public static String saleId = "VA POS"; // test environment only - replace for production
-    public static String poiId = "DMGVA002"; // test environment only - replace for production
+    public static String saleId = ""; // test environment only - replace for production
+    public static String poiId = ""; // test environment only - replace for production
     public static String kek = "44DACB2A22A4A752ADC1BBFFE6CEFB589451E0FFD83F8B21"; // test environment only - replace for production
     public static String providerIdentification = "Company A"; // test environment only - replace for production
     public static String applicationName = "POS Retail";//"Android POS"; // test environment only - replace for production
