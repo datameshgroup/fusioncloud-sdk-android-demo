@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.posonandroidva">
+    package="au.com.dmg.fusioncloud.android.demo">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="fusioncloud.sdk.android.GlobalClass"
+        android:name="au.com.dmg.fusioncloud.android.demo.GlobalClass"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,49 +17,32 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:screenOrientation="landscape"
         android:theme="@style/Theme.FusionCloudSDKAndroidDemo">
         <activity
-            android:name="fusioncloud.sdk.android.ActivityLoading"
-            android:exported="false"
-            android:noHistory="true"/>
-        <!-- tools:targetApi="31"> -->
-        <activity
-            android:name="fusioncloud.sdk.android.SettingsActivity"
+            android:name="au.com.dmg.fusioncloud.android.demo.SettingsActivity"
             android:exported="false"
             android:label="SettingsActivity" />
         <activity
-            android:name="fusioncloud.sdk.android.ActivityRequests"
+            android:name="au.com.dmg.fusioncloud.android.demo.ActivitySatellite"
             android:exported="false" />
         <activity
-            android:name="fusioncloud.sdk.android.ActivityResult"
-            android:exported="false" />
-        <activity
-            android:name="fusioncloud.sdk.android.ActivitySatellite"
-            android:exported="false" />
-        <activity
-            android:name="fusioncloud.sdk.android.ActivityCart"
-            android:exported="false" />
-        <activity
-            android:name="fusioncloud.sdk.android.ActivityProducts"
-            android:exported="false" />
-        <activity
-            android:name="fusioncloud.sdk.android.InfoActivity"
-            android:exported="false" />
-        <activity
-            android:name="fusioncloud.sdk.android.SummaryActivity"
-            android:exported="false" />
-        <activity
-            android:name="fusioncloud.sdk.android.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name="au.com.dmg.fusioncloud.android.demo.MainActivity"
+            android:exported="false">
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
-        <provider
-            android:name="fusioncloud.sdk.android.Database.OrderProvider"
-            android:authorities="com.example.posonandroidva"
-            android:exported="true" />
+        <activity
+            android:name="au.com.dmg.fusioncloud.android.demo.PaymentActivity"
+            android:exported="true"> <!--android:exported="false">-->
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
     </application>
 
 </manifest>
